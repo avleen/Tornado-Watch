@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
@@ -17,6 +18,7 @@ import android.view.MotionEvent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class TornadoWatchActivity extends MapActivity implements OnGestureListener, OnDoubleTapListener {
 	
@@ -24,6 +26,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	List<Overlay> mapOverlays;
 	Drawable drawable;
 	TornadoItemizedOverlay itemizedOverlay;
+    MyLocationOverlay myLocationOverlay;
 
 	/** Called when the activity is first created. */
     @Override
@@ -35,18 +38,27 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	setContentView(R.layout.main);
 
     	mapView = (MapView) findViewById(R.id.mapView);
-        LinearLayout zoomLayout = (LinearLayout)findViewById(R.id.zoom);  
         mapView.setBuiltInZoomControls(true);
-        mapView.displayZoomControls(true);
+        mapView.setSatellite(false);
         
-        mapOverlays = mapView.getOverlays();
-        drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-        itemizedOverlay = new TornadoItemizedOverlay(drawable);
+        /* A test marker, sits over Mexico City. Mmmm burrito.
+        * mapOverlays = mapView.getOverlays();
+        * drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+        * itemizedOverlay = new TornadoItemizedOverlay(drawable);
+        *
+        * GeoPoint point = new GeoPoint(19240000,-99120000);
+        * OverlayItem overlayitem = new OverlayItem(point, "", "");
+        * itemizedOverlay.addOverlay(overlayitem);
+        * mapOverlays.add(itemizedOverlay);
+        */
         
-        GeoPoint point = new GeoPoint(19240000,-99120000);
-        OverlayItem overlayitem = new OverlayItem(point, "", "");
-        itemizedOverlay.addOverlay(overlayitem);
-        mapOverlays.add(itemizedOverlay);
+        /* Add an overlay for the current location marker.
+         * Once we have it, refresh immediately and zoom to our location.
+         */
+        myLocationOverlay = new TornadoLocationOverlay(this, mapView);
+        mapView.getOverlays().add(myLocationOverlay);
+        mapView.postInvalidate();
+        zoomToMyLocation();
     }
     
     @Override
@@ -54,6 +66,26 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	return false;
     }
 
+    protected void onResume() {
+    	super.onResume();
+    	// On start or resume, register for location updates!
+    	myLocationOverlay.enableCompass();
+    	myLocationOverlay.enableMyLocation();
+    	myLocationOverlay.runOnFirstFix(new Runnable() {
+            public void run() {
+                mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+            }
+        });
+    }
+    
+    protected void onPause() {
+    	super.onPause();
+    	/* Be polite - when we're closed, don't get network location updates.
+    	 * TODO(avleen): This will change once we can run in the background,
+    	 * to warn of nearby weather changes.
+    	 */
+    	myLocationOverlay.disableMyLocation();
+    }
 	public boolean onDown(MotionEvent arg0) {
 		// TODO Auto-generated method stub
 		return false;
@@ -82,8 +114,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	}
 
 	public boolean onSingleTapUp(MotionEvent arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		zoomToMyLocation();
+		return true;
 	}
 
 	public boolean onDoubleTap(MotionEvent arg0) {
@@ -103,5 +135,15 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	public boolean onSingleTapConfirmed(MotionEvent arg0) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private void zoomToMyLocation() {
+		GeoPoint myLocationGeoPoint = myLocationOverlay.getMyLocation();
+		if (myLocationGeoPoint != null) {
+			mapView.getController().animateTo(myLocationGeoPoint);
+			mapView.getController().setZoom(10);
+		} else {
+			Toast.makeText(this, "Cannot determine location", Toast.LENGTH_SHORT).show();
+		}
 	}
 }
