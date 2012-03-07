@@ -8,12 +8,17 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.google.android.maps.Projection;
+
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class TornadoWatchActivity extends MapActivity {
+public class TornadoWatchActivity extends MapActivity implements OnGestureListener, OnDoubleTapListener {
 	
 	MapView mapView;
 	List<Overlay> mapOverlays;
@@ -48,4 +53,55 @@ public class TornadoWatchActivity extends MapActivity {
     protected boolean isRouteDisplayed() {
     	return false;
     }
+
+	public boolean onDown(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean onFling(MotionEvent arg0, MotionEvent arg1, float arg2,
+			float arg3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void onLongPress(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
+			float arg3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void onShowPress(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean onSingleTapUp(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean onDoubleTap(MotionEvent arg0) {
+		int x = (int)arg0.getX();
+		int y = (int)arg0.getY();
+		Projection p = mapView.getProjection();
+		mapView.getController().animateTo(p.fromPixels(x, y));
+		mapView.getController().zoomIn();
+		return true;
+	}
+
+	public boolean onDoubleTapEvent(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean onSingleTapConfirmed(MotionEvent arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

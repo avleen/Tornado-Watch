@@ -30,5 +30,4 @@ public class TornadoItemizedOverlay extends ItemizedOverlay {
 		// TODO Auto-generated method stub
 		return mOverlays.size();
 	}
-
 }
