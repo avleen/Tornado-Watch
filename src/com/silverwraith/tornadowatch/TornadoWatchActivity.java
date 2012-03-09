@@ -23,6 +23,9 @@ import com.google.android.maps.Projection;
 
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import android.os.Bundle;
@@ -37,6 +40,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	Drawable drawable;
 	TornadoItemizedOverlay itemizedOverlay;
     MyLocationOverlay myLocationOverlay;
+    Boolean initialLocation = false;
 
 	/** Called when the activity is first created. */
     @Override
@@ -69,7 +73,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         try {
 			JSONArray json = downloadMarkers();
 			mapOverlays = mapView.getOverlays();
-			drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+			drawable = this.getResources().getDrawable(R.drawable.locationplace);
 			itemizedOverlay = new TornadoItemizedOverlay(drawable);
 			for (int i=0; i < json.length(); i++) {
 				JSONObject json_data = json.getJSONObject(i);
@@ -95,10 +99,6 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         myLocationOverlay = new TornadoLocationOverlay(this, mapView);
         mapView.getOverlays().add(myLocationOverlay);
         mapView.postInvalidate();
-
-        // Jump to the users location if possible
-        // TODO(avleen): Add try / catch in case we can't.
-        zoomToMyLocation();
     }
     
     @Override
@@ -154,10 +154,6 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	}
 
 	public boolean onSingleTapUp(MotionEvent arg0) {
-		/* Only do this while we debug, this needs to move to a
-		 * dedicated button, using Google's Android stencils maybe?
-		 */
-		// zoomToMyLocation();
 		return true;
 	}
 
@@ -180,14 +176,48 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		return false;
 	}
 	
-	private void zoomToMyLocation() {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.optionsmenu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.my_location:
+	            zoomToMyLocation(false);
+	            return true;
+	        case R.id.place_marker:
+	        	placeMarker();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+
+	private void zoomToMyLocation(Boolean initialLocation) {
 		GeoPoint myLocationGeoPoint = myLocationOverlay.getMyLocation();
 		if (myLocationGeoPoint != null) {
 			mapView.getController().animateTo(myLocationGeoPoint);
 			mapView.getController().setZoom(10);
 		} else {
-			Toast.makeText(this, "Cannot determine location", Toast.LENGTH_SHORT).show();
+			if (initialLocation == false) {
+				Toast.makeText(this, "Cannot determine location", Toast.LENGTH_SHORT).show();
+			}
 		}
+	}
+	
+	private void placeMarker() {
+		mapOverlays = mapView.getOverlays();
+		drawable = this.getResources().getDrawable(R.drawable.locationplace);
+		itemizedOverlay = new TornadoItemizedOverlay(drawable);
+        GeoPoint point = myLocationOverlay.getMyLocation();
+        itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
+        mapOverlays.add(itemizedOverlay);
+        mapView.postInvalidate();
 	}
 	
 	public static String downloadJSON() throws MalformedURLException, IOException {
