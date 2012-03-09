@@ -1,12 +1,18 @@
 package com.silverwraith.tornadowatch;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +47,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	TornadoItemizedOverlay itemizedOverlay;
     MyLocationOverlay myLocationOverlay;
     Boolean initialLocation = false;
+    String sID = null;
+    static String installationFile = "INSTALLATION";
 
 	/** Called when the activity is first created. */
     @Override
@@ -50,6 +58,9 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.main);
+    	
+    	// Before anything else, get / set the application installation ID
+    	sID = getsetInstallationID();
 
     	mapView = (MapView) findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
@@ -210,7 +221,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		}
 	}
 	
-	private void placeMarker() {
+	private void placeMarker() {		
 		mapOverlays = mapView.getOverlays();
 		drawable = this.getResources().getDrawable(R.drawable.locationplace);
 		itemizedOverlay = new TornadoItemizedOverlay(drawable);
@@ -218,6 +229,30 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
         mapOverlays.add(itemizedOverlay);
         mapView.postInvalidate();
+        
+        try {
+			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6(), sID);
+		} catch (MalformedURLException e) {
+			Toast.makeText(this, "Malformed URL", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	public void submitCoordinates(int lng, int lat, String sID) throws MalformedURLException {
+		String queryString = "?lng=" + lng + "&lat=" + lat + "&uid=" + sID;
+		URL url = new URL("http://silverwraith.com/tw_submit.php" + queryString);
+		try {
+			URLConnection urlConnection = url.openConnection();
+			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			InputStreamReader is = new InputStreamReader(in);
+			BufferedReader br = new BufferedReader(is);
+			String read = br.readLine();
+
+			while(read != null) {
+			    read = br.readLine();
+			}
+		} catch (IOException e) {
+			Toast.makeText(this, "Unable to submit URL - try again!", Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	public static String downloadJSON() throws MalformedURLException, IOException {
@@ -238,5 +273,34 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	public static JSONArray downloadMarkers() throws MalformedURLException, JSONException, IOException {
 		JSONArray json = new JSONArray(downloadJSON());
 		return json;
+	}
+	
+	private String getsetInstallationID() {
+		if (sID == null) {
+			File installation = new File(this.getFilesDir(), installationFile);
+			try {
+				if (!installation.exists())
+					writeInstallationFile(installation);
+				sID = readInstallationFile(installation);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return sID;
+	}
+	
+	private static String readInstallationFile(File installation) throws IOException {
+		RandomAccessFile f = new RandomAccessFile(installation, "r");
+		byte[] bytes = new byte[(int) f.length()];
+		f.readFully(bytes);
+		f.close();
+		return new String(bytes);
+	}
+	
+	private static void writeInstallationFile(File installation) throws IOException {
+		FileOutputStream out = new FileOutputStream(installation);
+		String id = UUID.randomUUID().toString();
+		out.write(id.getBytes());
+		out.close();
 	}
 }
