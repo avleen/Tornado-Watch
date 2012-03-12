@@ -3,5 +3,7 @@
 
     <string name="hello">Hello World, TornadoWatchActivity!</string>
     <string name="app_name">Tornado Watch</string>
+    <string name="location_service_started">Tornado location service started</string>
+    <string name="location_service_label">Tornado Watcher location service</string>
 
 </resources>

@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>NWS Watch and Warning products at [2012 03/09 14:25:09 UTC]</name>
+<open>1</open>
+<Style><ListStyle><listItemType>check</listItemType></ListStyle></Style>
+<Placemark>
+<name>NWS Watch and Warning products at [2012 03/09 14:25:09 UTC]</name>
+<description>Created by WDSS-II http://www.wdssii.org/ (c) Univ of Oklahoma, National Severe Storms Laboratory </description>
+<visibility>1</visibility>
+</Placemark>
+<Style id="warningMarker"><LabelStyle><scale>0.7</scale></LabelStyle><IconStyle><scale>0.7</scale></IconStyle></Style>
+<Style id="outlookMarker"><LabelStyle><scale>1.0</scale></LabelStyle><IconStyle><scale>1.0</scale></IconStyle></Style>
+<Style id="parentFolder"><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style><Style id="outlookFolder"><ListStyle><listItemType>radioFolder</listItemType></ListStyle></Style>
+<Style id="PDSTORWatch"><LineStyle><color>ff000099</color><width>6</width></LineStyle></Style>
+<Style id="SVRWatch"><LineStyle><color>ffff0000</color><width>6</width></LineStyle></Style>
+<Style id="PDSSVRWatch"><LineStyle><color>ff990000</color><width>6</width></LineStyle></Style>
+<Style id="TORWarn"><LineStyle><color>ff0000ff</color><width>4</width></LineStyle><PolyStyle><color>7f0000ff</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Style id="SVRWarn"><LineStyle><color>ff0080ff</color><width>4</width></LineStyle><PolyStyle><color>7f0080ff</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Style id="FFWWarn"><LineStyle><color>ffffff00</color><width>4</width></LineStyle><PolyStyle><color>7fffff00</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Style id="SMWWarn"><LineStyle><color>ff8b8b00</color><width>4</width></LineStyle><PolyStyle><color>7f8b8b00</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Style id="CANWarn"><LineStyle><color>ffa9a9a9</color><width>4</width></LineStyle><PolyStyle><color>7fa9a9a9</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Style id="greenLine"><LineStyle><color>ff00ff00</color><width>6</width></LineStyle></Style>
+<Style id="yellowLine"><LineStyle><color>ff00ffff</color><width>6</width></LineStyle></Style>
+<Style id="redLine"><LineStyle><color>ff0000ff</color><width>6</width></LineStyle></Style>
+<Style id="magentaLine"><LineStyle><color>ffff00ff</color><width>6</width></LineStyle></Style>
+<Style id="dkblueLine"><LineStyle><color>ffd44b1e</color><width>6</width></LineStyle></Style>
+<Style id="dkgreenLine"><LineStyle><color>ff057324</color><width>6</width></LineStyle></Style>
+<Style id="orangeLine"><LineStyle><color>ff0085cd</color><width>6</width></LineStyle></Style>
+<Style id="brownLine"><LineStyle><color>ff26478b</color><width>6</width></LineStyle></Style>
+<Style id="blueLine"><LineStyle><color>ff8b4E10</color><width>6</width></LineStyle></Style>
+<Style id="blackLine"><LineStyle><color>ff000000</color><width>6</width></LineStyle></Style>
+<Style id="sigArea"><LineStyle><color>ffeeb200</color><width>6</width></LineStyle><PolyStyle><color>7feeb200</color><fill>1</fill><outline>1</outline></PolyStyle></Style>
+<Folder id="TOR">
+<styleUrl>#parentFolder</styleUrl>
+<name>Warnings: Tornado</name>
+</Folder>
+<Folder id="SVR">
+<styleUrl>#parentFolder</styleUrl>
+<name>Warnings: Severe T-Storm</name>
+</Folder>
+<Folder id="FFW">
+<styleUrl>#parentFolder</styleUrl>
+<name>Warnings: Flash Flood</name>
+</Folder>
+<Folder id="SMW">
+<styleUrl>#parentFolder</styleUrl>
+<name>Warnings: Special Marine</name>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-86.11,30.37,25
+</coordinates>
+</Point>
+<name>SpecialMarineWarning - 09/1545Z</name>
+  <description><![CDATA[<pre>WHUS54 KMOB 091340   
+SMWMOB   
+GMZ650-655-670-675-091545-   
+O.NEW.KMOB.MA.W.0021.120309T1340Z-120309T1545Z   
+   
+BULLETIN - IMMEDIATE BROADCAST REQUESTED   
+SPECIAL MARINE WARNING   
+NATIONAL WEATHER SERVICE MOBILE AL   
+740 AM CST FRI MAR 9 2012   
+   
+THE NATIONAL WEATHER SERVICE IN MOBILE HAS ISSUED A   
+   
+* SPECIAL MARINE WARNING FOR...   
+  COASTAL WATERS FROM DESTIN FL TO WRN DAUPHIN ISLAND AL OUT 60 NM   
+  INCLUDING CHOCTAWHATCHEE BAY   
+  INCLUDING PENSACOLA BAY   
+   
+* UNTIL 945 AM CST   
+   
+* AT 734 AM CST...NATIONAL WEATHER SERVICE DOPPLER RADAR INDICATED A   
+  LINE OF THUNDERSTORMS...PRODUCING STRONG WINDS 34 KNOTS OR GREATER   
+  FROM 49 NM SOUTH OF PETIT BOIS PASS TO 26 NM NORTHEAST OF DESTIN...   
+  OR FROM 53 NM SOUTH OF MISSISSIPPI SOUND EAST OF PASCAGOULA TO 13   
+  NM NORTHEAST OF HIGHWAY 331 BRIDGE...MOVING SOUTHEAST AT 25 KNOTS.   
+   
+* THESE STRONG THUNDERSTORMS WILL BE NEAR   
+  OVER EAST CHOCTAWHATCHEE BAY AROUND 745 AM CST   
+  OVER HIGHWAY 331 BRIDGE AROUND 750 AM CST   
+  OVER ORISKANY REEF AROUND 755 AM CST   
+  OVER OKALOOSA DEEP WATER REEF AROUND 835 AM CST   
+   
+PRECAUTIONARY/PREPAREDNESS ACTIONS...   
+   
+MARINERS CAN EXPECT GUSTY WINDS...HIGH WAVES...DANGEROUS LIGHTNING...   
+AND HEAVY RAINS. BOATERS SHOULD SEEK SAFE HARBOR IMMEDIATELY...UNTIL   
+THIS STORM PASSES.   
+   
+xx   
+   
+LAT...LON 3037 8611 3043 8625 3040 8651 2937 8653   
+      2921 8797 2988 8831 3047 8696 3044 8687   
+      3037 8714 3041 8659 3043 8664 3051 8649   
+      3053 8650 3051 8641 3045 8642 3048 8614   
+      3049 8614 3041 8609   
+TIME...MOT...LOC 1339Z 327DEG 23KT 2943 8868 3057 8601   
+   
+$$   
+   
+   
+   
+   
+   
+</pre>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#SMWWarn</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-86.11,30.37,25
+-86.25,30.43,25
+-86.51,30.4,25
+-86.53,29.37,25
+-87.97,29.21,25
+-88.31,29.88,25
+-86.96,30.47,25
+-86.87,30.44,25
+-87.14,30.37,25
+-86.59,30.41,25
+-86.64,30.43,25
+-86.49,30.51,25
+-86.5,30.53,25
+-86.41,30.51,25
+-86.42,30.45,25
+-86.14,30.48,25
+-86.14,30.49,25
+-86.09,30.41,25
+-86.11,30.37,25
+</coordinates>
+</LineString>
+</Placemark>
+</Folder>
+<Folder id="TWA">
+<styleUrl>#parentFolder</styleUrl>
+<name>Watches: Tornado</name>
+</Folder>
+<Folder id="SWA">
+<styleUrl>#parentFolder</styleUrl>
+<name>Watches: Severe T-Storm</name>
+</Folder>
+<Folder id="MCD">
+<styleUrl>#parentFolder</styleUrl>
+<visibility>0</visibility><name>SPC Mesoscale Discussion</name>
+</Folder>
+<Folder>
+<name>SPC Day 1 Outlook</name>
+<visibility>0</visibility>
+<Folder id="DAY1">
+<styleUrl>#outlookFolder</styleUrl>
+<visibility>0</visibility><name>SPC Day 1 Outlook</name>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Categorical Outlook</name>
+<description>1300Z Outlook</description>
+<visibility>0</visibility>
+<Placemark>
+<styleUrl>#outlookMarker</styleUrl>
+<Point>
+<coordinates>
+-97.44,35.18
+</coordinates>
+</Point>
+<name>SPC-Day1 Discussion</name>
+  <description><![CDATA[<pre>ACUS01 KWNS 091235   
+SWODY1   
+SPC AC 091233   
+   
+DAY 1 CONVECTIVE OUTLOOK     
+NWS STORM PREDICTION CENTER NORMAN OK   
+0633 AM CST FRI MAR 09 2012   
+   
+VALID 091300Z - 101200Z   
+   
+...NO SVR TSTM AREAS FORECAST...   
+   
+...SYNOPSIS...   
+SPLIT FLOW WILL PREVAIL OVER THE CONUS...WITH THE MAIN BELT OF THE   
+WLYS PERSISTING FROM BC ACROSS S CNTRL CANADA INTO THE NERN U.S.  A   
+FAIRLY STRONG SHORTWAVE TROUGH IN THIS FLOW WILL PROGRESS FROM THE   
+CNTRL GRT LKS TO OFF THE NEW ENGLAND CST BY THE END OF THE PERIOD.    
+IN THE WEAKER SRN STREAM...NM UPR LOW SHOULD RETROGRESS TO SE   
+AZ...ALLOWING HEIGHTS TO REBOUND ACROSS THE SRN PLNS/LWR MS VLY.   
+   
+AT THE SFC...COLD FRONT ATTENDANT TO BOTH THE NM LOW AND THE NERN   
+TROUGH IS EXPECTED TO CONTINUE ADVANCING SE ACROSS THE NWRN GULF OF   
+MEXICO AND THE SERN STATES.  THE BOUNDARY SHOULD WEAKEN AS IT   
+REACHES CNTRL FL EARLY SAT.   
+   
+...FL AND ADJACENT SERN STATES TODAY...   
+EMBEDDED ELEVATED TSTMS WILL PERSIST THROUGH LATER THIS MORNING   
+NORTH OF COLD FRONT OVER THE NWRN GULF...SRN LA...AND SRN MS.    
+OTHERWISE...DIURNAL DESTABILIZATION COULD SUPPORT DEVELOPMENT OF   
+WDLY SCTD SFC-BASED SHOWERS/STORMS ALONG THE FRONT EWD TO THE S   
+ATLANTIC CST.  HOWEVER...GREATER COVERAGE OF DIURNAL STORMS IS   
+EXPECTED FARTHER S OVER THE FL PENINSULA...WHERE MORE SIGNIFICANT   
+CONVERGENCE WILL EXIST ALONG SEA BREEZE BOUNDARIES.  COMBINATION OF   
+SEASONABLY MOIST AIR /PW AOA 1.25 INCHES/ AND STRONG SFC HEATING   
+SHOULD BOOST SBCAPE TO AOA 1500 J/KG.  WEAK SHEAR SHOULD LIMIT   
+UPDRAFT ORGANIZATION/STRENGTH.   
+   
+...TX THROUGH EARLY SAT...   
+IT WILL REMAIN RELATIVELY MOIST AND UNSTABLE ATOP SHALLOW FRONTAL   
+INVERSION OVER CNTRL AND S TX THROUGH SAT.  HEIGHTS WILL RISE   
+ALOFT...BUT UPR DIFFLUENCE WILL PERSIST E OF RETROGRESSING UPR LOW.    
+THIS SETUP MAY YIELD PERIODIC BOUTS OF ELEVATED CONVECTION/TSTMS.    
+WHILE A FEW UPDRAFTS MAY BECOME STRONG ENOUGH TO PRODUCE   
+HAIL...CLOUD LAYER SHEAR AND INSTABILITY EXPECTED TO REMAIN TOO WEAK   
+TO SUPPORT A RISK FOR SUSTAINED SVR STORMS.   
+   
+..CORFIDI/MOSIER.. 03/09/2012   
+   
+   
+</pre>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-79.61,26.48,25
+</coordinates>
+</Point>
+<name>TSTM</name>
+<description><![CDATA[<a href="http://www.spc.noaa.gov/misc/about.html#Levels%20of%20Risk">Explanation from the SPC</a>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#orangeLine</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-79.61,26.48
+-80.38,25.86
+-81.18,25.62
+-82.33,25.83
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-103.7,28.79,25
+</coordinates>
+</Point>
+<name>TSTM</name>
+<description><![CDATA[<a href="http://www.spc.noaa.gov/misc/about.html#Levels%20of%20Risk">Explanation from the SPC</a>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#orangeLine</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-103.7,28.79
+-104.18,31.16
+-104.33,32.69
+-104.23,34.12
+-103.57,35.01
+-101.31,35.5
+-99.86,35.26
+-97.08,33.79
+-93.13,32.76
+-89.95,32.26
+-86.25,32.36
+-82.43,32.73
+-75.84,35.87
+-74.73,36.33
+</coordinates>
+</LineString>
+</Placemark>
+</Folder>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Tornado Probabilities</name>
+<visibility>0</visibility>
+</Folder>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Hail Probabilities</name>
+<visibility>0</visibility>
+</Folder>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Wind Probabilities</name>
+<visibility>0</visibility>
+</Folder>
+</Folder>
+</Folder><Folder>
+<name>SPC Day 2 Outlook</name>
+<visibility>0</visibility>
+<Folder id="DAY2">
+<styleUrl>#outlookFolder</styleUrl>
+<visibility>0</visibility><name>SPC Day 2 Outlook</name>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Categorical Outlook</name>
+<visibility>0</visibility>
+<Placemark>
+<styleUrl>#outlookMarker</styleUrl>
+<Point>
+<coordinates>
+-97.44,35.18
+</coordinates>
+</Point>
+<name>SPC-Day2 Discussion</name>
+  <description><![CDATA[<pre>ACUS02 KWNS 090529   
+SWODY2   
+SPC AC 090527   
+   
+DAY 2 CONVECTIVE OUTLOOK     
+NWS STORM PREDICTION CENTER NORMAN OK   
+1127 PM CST THU MAR 08 2012   
+   
+VALID 101200Z - 111200Z   
+   
+...NO SVR TSTM AREAS FORECAST...   
+   
+...SRN ROCKIES/SRN PLAINS...   
+   
+LATEST SHORT RANGE MODEL GUIDANCE IS IN REASONABLE AGREEMENT IN THAT   
+THE SWRN U.S. UPPER LOW SHOULD BEGIN TO EJECT INTO THE SRN HIGH   
+PLAINS DURING THE LATTER HALF OF THE PERIOD.  WHILE THE NAM IS   
+SLIGHTLY FASTER THAN THE GFS AND SOMEWHAT FARTHER NORTH INTO SWRN KS   
+WITH THIS FEATURE AT 11/12Z THE NET RESULT FOR UNSETTLED CONDITIONS   
+WILL BE SIMILARLY NOTED ACROSS THE REGION.  COOLER BOUNDARY LAYER   
+CONDITIONS SHOULD BE SLOW TO ERODE ACROSS THE HIGH PLAINS OF TX/ERN   
+NM AND SFC PRESSURE REDUCTION WILL BECOME FOCUSED DOWNSTREAM ALONG   
+THE I-35 CORRIDOR BY LATE AFTERNOON.  EVEN SO NEAR-SFC CONDITIONS   
+WILL STRUGGLE TO WARM/DESTABILIZE ACROSS CNTRL/ERN TX.  STRONG LOW   
+LEVEL WARM ADVECTION IN CONJUNCTION WITH A FAVORABLE TRAJECTORY OFF   
+THE WRN GULF BASIN SUGGESTS AN EXTENSIVE PRECIP EVENT IS POSSIBLE   
+ACROSS MUCH OF TX/OK INTO SRN KS.  FORECAST SOUNDINGS DO NOT SUPPORT   
+SUFFICIENT INSTABILITY TO WARRANT ANY MEANINGFUL THREAT FOR   
+ORGANIZED SEVERE THUNDERSTORMS DESPITE THE STRONG SHEAR THAT WILL BE   
+OBSERVED.  VERY LATE IN THE PERIOD MODIFIED TROPICAL AIRMASS WILL   
+BEGIN TO RETURN TO THE MIDDLE/UPPER TX COAST BUT POOR LAPSE RATES   
+WILL LIKELY PREVENT ROBUST CONVECTION DURING THE DAY2 PERIOD.   
+   
+...FL...   
+   
+WEAK SHORT-WAVE TROUGH WILL DIG SEWD ACROSS THE FL PENINSULA   
+SATURDAY WHICH WILL AGITATE A POCKET OF WEAK DIURNALLY-ENHANCED   
+INSTABILITY.  AS SFC TEMPERATURES WARM INTO THE MID 70S IT APPEARS   
+SUFFICIENT BUOYANCY WILL EXIST ACROSS CNTRL/SRN FL FOR THE   
+POSSIBILITY FOR SHOWERS AND A FEW THUNDERSTORMS.   
+   
+..DARROW.. 03/09/2012   
+   
+   
+</pre>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-104.57,29.44,25
+</coordinates>
+</Point>
+<name>TSTM</name>
+<description><![CDATA[<a href="http://www.spc.noaa.gov/misc/about.html#Levels%20of%20Risk">Explanation from the SPC</a>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#orangeLine</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-104.57,29.44
+-104.44,32.1
+-104.7,33.46
+-105.96,34.54
+-107.34,35.31
+-108.27,36.64
+-107.77,38.82
+-105.89,40.26
+-104.66,39.97
+-103.75,38.06
+-103.1,37.24
+-101.78,36.43
+-100.17,36.14
+-98.38,36.37
+-96.74,36.63
+-95.42,36.33
+-94.47,35.48
+-93.97,33.55
+-96.22,29.77
+-96.47,27.43
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-83.45,27.54,25
+</coordinates>
+</Point>
+<name>TSTM</name>
+<description><![CDATA[<a href="http://www.spc.noaa.gov/misc/about.html#Levels%20of%20Risk">Explanation from the SPC</a>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#orangeLine</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-83.45,27.54
+-80.36,29.37
+</coordinates>
+</LineString>
+</Placemark>
+</Folder>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Any Severe Probabilities</name>
+<visibility>0</visibility>
+</Folder>
+</Folder>
+</Folder>
+<Folder>
+<name>SPC Day 3 Outlook</name>
+<visibility>0</visibility>
+<Folder id="DAY3">
+<styleUrl>#outlookFolder</styleUrl>
+<visibility>0</visibility><name>SPC Day 3 Outlook</name>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Categorical Outlook</name>
+<visibility>0</visibility>
+<Placemark>
+<styleUrl>#outlookMarker</styleUrl>
+<Point>
+<coordinates>
+-97.44,35.18
+</coordinates>
+</Point>
+<name>SPC-Day3 Discussion</name>
+  <description><![CDATA[<pre>ACUS03 KWNS 090819   
+SWODY3   
+SPC AC 090818   
+   
+DAY 3 CONVECTIVE OUTLOOK     
+NWS STORM PREDICTION CENTER NORMAN OK   
+0218 AM CST FRI MAR 09 2012   
+   
+VALID 111200Z - 121200Z   
+   
+...SERN TX/LA...   
+   
+GFS AND ECMWF ARE IN CLOSER AGREEMENT REGARDING THE EJECTING UPPER   
+LOW ACROSS THE TX PANHANDLE EARLY IN THE PERIOD INTO IA AFTER   
+MIDNIGHT.  WITH HEIGHT FALLS EXPECTED TO SPREAD INTO THE MID MS   
+VALLEY REGION IT APPEARS TRAILING FRONTAL ZONE MAY NOT BE   
+PARTICULARLY CONVERGENT ACROSS LOWER LATITUDES AND WILL LIKELY LOSE   
+ITS IDENTITY WITH TIME AS IT PROPAGATES ACROSS SERN TX INTO LA.    
+LARGE SCALE FORCING WILL ENCOURAGE THE LLJ TO FOCUS ACROSS AR/MO BY   
+EARLY AFTERNOON THOUGH SUSTAINED SLY LOW LEVEL TRAJECTORIES WILL   
+ALLOW MODIFIED TROPICAL AIRMASS TO RETURN ACROSS THE AFOREMENTIONED   
+REGIONS OF SERN TX INTO THE LOWER MS VALLEY WHERE SFC DEW POINTS   
+SHOULD EASILY RISE THROUGH THE MID 60S.  IT APPEARS A CONSIDERABLE   
+AMOUNT OF CONVECTION MAY BE ONGOING AT THE BEGINNING OF THE PERIOD   
+ALONG THE I-35 CORRIDOR FROM CNTRL TX NWD INTO ERN KS.  THIS   
+ACTIVITY SHOULD THEN PROPAGATE DOWNSTREAM INTO THE MID MS VALLEY   
+WHERE FORCING WILL BE MAXIMIZED.  IT/S NOT ENTIRELY CLEAR HOW ROBUST   
+THE CONVECTION WILL BE DURING THE AFTERNOON HOURS ACROSS EAST TX AS   
+BOUNDARY LAYER HEATING IS NOT EXPECTED TO BE THAT STRONG.  EVEN SO   
+DEEP LAYER SHEAR PROFILES WOULD SUPPORT ORGANIZED UPDRAFTS AND WILL   
+INTRODUCE LOW PROBABILITIES FOR AN ISOLATED SEVERE STORM WELL SOUTH   
+OF THE STRONGER ZONE OF FORCING.  WITH FRONTOLYSIS EXPECTED ALONG   
+THE TRAILING BOUNDARY SOUTH OF I-20 TSTM OUTFLOW WILL BE THE PRIMARY   
+FORCING FOR EWD PROPAGATION OF CONVECTION INTO LA DURING THE LATTER   
+HALF OF THE PERIOD.   
+   
+..DARROW.. 03/09/2012   
+   
+   
+</pre>]]></description>
+</Placemark>
+</Folder>
+<Folder>
+<styleUrl>#parentFolder</styleUrl>
+<name>Any Severe Probabilities</name>
+<visibility>0</visibility>
+<Placemark>
+<styleUrl>#warningMarker</styleUrl>
+<Point>
+<coordinates>
+-96.1,27.87,25
+</coordinates>
+</Point>
+<name>0.05</name>
+<description><![CDATA[<a href="http://www.spc.noaa.gov/products/outlook/probinfo.html">Explanation from the SPC</a>]]></description>
+</Placemark>
+<Placemark>
+<styleUrl>#orangeLine</styleUrl>
+<LineString>
+<tessellate>1</tessellate>
+<drawOrder>50</drawOrder>
+<altitudeMode>clampToGround</altitudeMode>
+<coordinates>
+-96.1,27.87
+-97.48,29.1
+-96.81,31.05
+-95.18,32.65
+-92.8,33.02
+-91.24,32.27
+-91.16,30.4
+-91.07,28.31
+</coordinates>
+</LineString>
+</Placemark>
+</Folder>
+</Folder>
+</Folder>
+</Document>
+</kml>

@@ -4,9 +4,16 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="8" />
+    
+    <permission
+        android:name="com.silverwraith.tornadowatch.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.silverwraith.tornadowatch.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
     
     <application
         android:icon="@drawable/ic_launcher"
@@ -20,7 +27,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <uses-library android:name="com.google.android.maps" />  
-    </application>
+        
+        <receiver
+            android:name=".TornadoRegistrationReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"></action>
+                <category android:name="com.silverwraith.tornadowatch" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver
+            android:name=".TornadoMessageReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter >
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" >
+                </action>
+                <category android:name="com.silverwraith.tornadowatch" />
+            </intent-filter>
+        </receiver>
 
+        <activity android:name="TornadoRegistrationResultActivity" />
+        <activity android:name="TornadoMessageReceivedActivity" />
+        
+        <uses-library android:name="com.google.android.maps" />
+        
+        <service android:name=".TornadoWatchLocationLoggerService" 
+   			android:enabled="true" />
+    </application>
 </manifest>

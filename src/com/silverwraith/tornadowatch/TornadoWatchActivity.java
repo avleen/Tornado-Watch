@@ -2,23 +2,31 @@ package com.silverwraith.tornadowatch;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -27,6 +35,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
+import android.util.Log;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.Menu;
@@ -35,12 +44,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 public class TornadoWatchActivity extends MapActivity implements OnGestureListener, OnDoubleTapListener {
 	
+	public static final String AUTH = "authentication";
 	MapView mapView;
 	List<Overlay> mapOverlays;
 	Drawable drawable;
@@ -49,6 +58,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     Boolean initialLocation = false;
     String sID = null;
     static String installationFile = "INSTALLATION";
+    static String TAG = "TW";
+    String registrationId = null; 
 
 	/** Called when the activity is first created. */
     @Override
@@ -59,9 +70,31 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.main);
     	
-    	// Before anything else, get / set the application installation ID
-    	sID = getsetInstallationID();
-
+    	// Do our registration dance first
+    	class RegisterApp extends AsyncTask<String, Void, String> {
+    		@Override
+			protected String doInBackground(String... params) {
+    			register();
+    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(TornadoWatchActivity.this);
+    			String registrationId = prefs.getString(AUTH, "nokey");
+    			Log.d("Tornado Debug", registrationId);
+				return registrationId;
+    		}
+    		public void register() {
+    			Log.w("C2DM", "start registration process");
+    			Intent intent = new Intent("com.google.android.c2dm.intent.REGISTER");
+    			intent.putExtra("app", PendingIntent.getBroadcast(TornadoWatchActivity.this, 0, new Intent(), 0));
+    			intent.putExtra("sender", "avleen@gmail.com");
+    			startService(intent);
+    		}
+    	}
+    	RegisterApp do_registration = new RegisterApp();
+    	do_registration.execute(new String[] { "" });
+    	
+    	// Start the LocationListener service
+    	Log.i(TAG, "Starting location tracker service");
+    	startService(new Intent(TornadoWatchActivity.this, TornadoWatchLocationLoggerService.class));
+    	
     	mapView = (MapView) findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(false);
@@ -125,11 +158,35 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	myLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
                 mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+                Log.i(TAG, myLocationOverlay.getMyLocation().toString());
+                int myLong = myLocationOverlay.getMyLocation().getLongitudeE6();
+                int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
+        		HttpClient client = new DefaultHttpClient();
+        		HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
+        		// Get the current registrationId. This might be "nokey"!
+        		registrationId = showRegistrationId();
+        		if (registrationId != null) {        		
+        			try {
+        				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+        				nameValuePairs.add(new BasicNameValuePair("long", String.valueOf(myLong)));
+        				nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
+        				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
+        				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        				HttpResponse response = client.execute(post);
+        				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        				String line = "";
+        				while ((line = rd.readLine()) != null) {
+        					Log.e("HttpResponse", line);
+        				}
+        			} catch (IOException e) {
+        				e.printStackTrace();
+        			}
+        		}
             }
         });
     }
-    
-    protected void onPause() {
+
+	protected void onPause() {
     	super.onPause();
     	/* Be polite - when we're closed, don't get network location updates.
     	 * TODO(avleen): This will change once we can run in the background,
@@ -274,33 +331,12 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		JSONArray json = new JSONArray(downloadJSON());
 		return json;
 	}
-	
-	private String getsetInstallationID() {
-		if (sID == null) {
-			File installation = new File(this.getFilesDir(), installationFile);
-			try {
-				if (!installation.exists())
-					writeInstallationFile(installation);
-				sID = readInstallationFile(installation);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return sID;
-	}
-	
-	private static String readInstallationFile(File installation) throws IOException {
-		RandomAccessFile f = new RandomAccessFile(installation, "r");
-		byte[] bytes = new byte[(int) f.length()];
-		f.readFully(bytes);
-		f.close();
-		return new String(bytes);
-	}
-	
-	private static void writeInstallationFile(File installation) throws IOException {
-		FileOutputStream out = new FileOutputStream(installation);
-		String id = UUID.randomUUID().toString();
-		out.write(id.getBytes());
-		out.close();
+
+	public String showRegistrationId() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String registrationId = prefs.getString(AUTH, null);
+		Log.d("C2DM RegId requested", registrationId);
+		return registrationId;
+
 	}
 }
