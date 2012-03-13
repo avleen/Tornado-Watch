@@ -57,7 +57,6 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	TornadoItemizedOverlay itemizedOverlay;
     MyLocationOverlay myLocationOverlay;
     Boolean initialLocation = false;
-    String sID = null;
     static String installationFile = "INSTALLATION";
     static String TAG = "TW";
     String registrationId = null; 
@@ -161,7 +160,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
             public void run() {
                 mapView.getController().animateTo(myLocationOverlay.getMyLocation());
                 Log.i(TAG, myLocationOverlay.getMyLocation().toString());
-                int myLong = myLocationOverlay.getMyLocation().getLongitudeE6();
+                int myLng = myLocationOverlay.getMyLocation().getLongitudeE6();
                 int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
         		HttpClient client = new DefaultHttpClient();
         		HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
@@ -170,7 +169,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         		if (registrationId != null) {        		
         			try {
         				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-        				nameValuePairs.add(new BasicNameValuePair("long", String.valueOf(myLong)));
+        				nameValuePairs.add(new BasicNameValuePair("lng", String.valueOf(myLng)));
         				nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
         				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
         				nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
@@ -293,15 +292,15 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         mapView.postInvalidate();
         
         try {
-			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6(), sID);
+			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6());
 		} catch (MalformedURLException e) {
 			Toast.makeText(this, "Malformed URL", Toast.LENGTH_SHORT).show();
 		}
 	}
 	
-	public void submitCoordinates(int lng, int lat, String sID) throws MalformedURLException {
-		String queryString = "?lng=" + lng + "&lat=" + lat + "&uid=" + sID;
-		URL url = new URL("http://silverwraith.com/tw_submit.php" + queryString);
+	public void submitCoordinates(int lng, int lat) throws MalformedURLException {
+		String queryString = "?lng=" + lng + "&lat=" + lat + "&registrationId=" + showRegistrationId();
+		URL url = new URL("http://tw.silverwraith.com/cgi-bin/user_submit.py" + queryString);
 		try {
 			URLConnection urlConnection = url.openConnection();
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
