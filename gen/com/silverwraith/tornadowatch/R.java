@@ -16,17 +16,22 @@ public final class R {
         public static final int ic_maps_indicator_current_position=0x7f020002;
         public static final int locationfound=0x7f020003;
         public static final int locationplace=0x7f020004;
+        public static final int preferences=0x7f020005;
     }
     public static final class id {
         public static final int mapView=0x7f060001;
-        public static final int my_location=0x7f060003;
-        public static final int place_marker=0x7f060004;
+        public static final int my_location=0x7f060004;
+        public static final int place_marker=0x7f060005;
+        public static final int preferences=0x7f060006;
         public static final int result=0x7f060000;
+        public static final int settings_text_view=0x7f060003;
         public static final int zoom=0x7f060002;
     }
     public static final class layout {
         public static final int activity_result=0x7f030000;
         public static final int main=0x7f030001;
+        public static final int preferences=0x7f030002;
+        public static final int show_settings_layout=0x7f030003;
     }
     public static final class menu {
         public static final int optionsmenu=0x7f050000;

@@ -45,6 +45,7 @@ import android.view.MotionEvent;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings.Secure;
 import android.widget.Toast;
 
 public class TornadoWatchActivity extends MapActivity implements OnGestureListener, OnDoubleTapListener {
@@ -60,7 +61,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     static String installationFile = "INSTALLATION";
     static String TAG = "TW";
     String registrationId = null; 
-
+    
 	/** Called when the activity is first created. */
     @Override
     /** public void onCreate(Bundle savedInstanceState) {
@@ -152,6 +153,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 
     protected void onResume() {
     	super.onResume();
+    	final String deviceId = Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
     	// On start or resume, register for location updates!
     	myLocationOverlay.enableCompass();
     	myLocationOverlay.enableMyLocation();
@@ -171,6 +173,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         				nameValuePairs.add(new BasicNameValuePair("long", String.valueOf(myLong)));
         				nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
         				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
+        				nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
         				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         				HttpResponse response = client.execute(post);
         				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -261,6 +264,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	        case R.id.place_marker:
 	        	placeMarker();
 	        	return true;
+	        case R.id.preferences:
+	        	startActivity(new Intent("com.silverwraith.tornadowatch.TornadoPreferenceActivity"));
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

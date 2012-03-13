@@ -28,6 +28,21 @@
             </intent-filter>
         </activity>
         
+        <activity android:name=".QuickPrefsActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".TornadoPreferenceActivity">
+            <intent-filter>
+                <action
+                    android:name="com.silverwraith.tornadowatch.TornadoPreferenceActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+		</activity>
+        
         <receiver
             android:name=".TornadoRegistrationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">

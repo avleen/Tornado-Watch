@@ -6,6 +6,9 @@
     <item android:id="@+id/place_marker"
           android:icon="@drawable/locationplace"
           android:title="Tornado near me!" />
+    <item android:id="@+id/preferences"
+          android:icon="@drawable/preferences"
+          android:title="Preferences" />
     <!--  <item android:id="@+id/take_picture"
           android:icon="@drawable/ic_take_picture"
           android:title="@string/take_picture" />

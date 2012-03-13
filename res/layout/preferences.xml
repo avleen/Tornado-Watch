@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="High priority notifications"
+        android:key="high_priority_notifications">
+        
+        <CheckBoxPreference 
+            android:key="high_priority_vibrate"
+            android:summary="Vibrate on high-priority alerts"
+            android:title="Vibrate" 
+            android:defaultValue="true"
+        />
+		<CheckBoxPreference 
+            android:key="high_priority_play_sound"
+            android:summary="Play sound on high-priority alerts"
+            android:title="Play sound" 
+            android:defaultValue="true"
+        />
+        
+		<RingtonePreference
+		    android:key="high_priority_ringtone"
+		    android:ringtoneType="notification"
+		    android:title="Notification tone"
+		/>            
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="Low priority notifications"
+        android:key="low_priority_notifications">
+        
+        <CheckBoxPreference 
+            android:key="low_priority_vibrate"
+            android:summary="Vibrate on low-priority alerts"
+            android:title="Vibrate" 
+            android:defaultValue="true"
+        />
+		<CheckBoxPreference 
+            android:key="low_priority_play_sound"
+            android:summary="Play sound on low-priority alerts"
+            android:title="Play sound" 
+            android:defaultValue="true"
+        />
+        
+		<RingtonePreference
+		    android:key="low_priority_ringtone"
+		    android:ringtoneType="notification"
+		    android:title="Notification tone"
+		/>            
+    </PreferenceCategory>    
+</PreferenceScreen>
