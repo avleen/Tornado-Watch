@@ -37,12 +37,12 @@ public class TornadoMessageReceiver extends BroadcastReceiver {
 		// Hide the notification after its selected
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
-		Intent intent = new Intent(context, TornadoMessageReceivedActivity.class);
+		Intent intent = new Intent(context, TornadoWatchActivity.class);
 		intent.putExtra("payload", payload);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				intent, 0);
 		notification.setLatestEventInfo(context, "Message",
-				"New tornado alert", pendingIntent);
+				"New tornado in your area", pendingIntent);
 		notificationManager.notify(0, notification);
 	}
 
