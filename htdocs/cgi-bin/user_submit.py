@@ -62,9 +62,9 @@ def main():
     cur.execute(sql, (registration_id, lng, lat, priority))
     DB_CONN.commit()
 
-    print "Content-type: text/html"
+    print "Content-type: text/plain"
     print
-    print cgi.escape(registration_id)
+    print cgi.escape("Marker submitted")
 
 
 if __name__ == "__main__":

@@ -38,9 +38,9 @@ def main():
     cur.execute(sql, (lng, lat, registration_id))
     DB_CONN.commit()
 
-    print "Content-type: text/html"
+    print "Content-type: text/plain"
     print
-    print cgi.escape(registration_id)
+    print cgi.escape("Location updated")
 
 
 if __name__ == "__main__":
