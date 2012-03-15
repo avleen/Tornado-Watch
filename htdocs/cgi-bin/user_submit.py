@@ -23,7 +23,7 @@ def check_submit_in_zone(lng, lat):
                 AND c.county ~* t.county
                 AND t.endtime > date_part('epoch', now())
                 AND t.starttime < date_part('epoch', now())"""
-    open('/tmp/av', 'w').write(cur.mogrify(sql, (lng, lat)))
+    #open('/tmp/av', 'w').write(cur.mogrify(sql, (lng, lat)))
     if cur.rowcount == 0:
         return False
     else:
@@ -44,10 +44,6 @@ def main():
         return
 
     make_db_conn()
-
-    # lng and lat in postgis are decimal, not microdegrees
-    lng = float(lng) / 1000000
-    lat = float(lat) / 1000000
 
     # Make sure we're in a tornado alert zone
     in_zone = check_submit_in_zone(lng, lat)

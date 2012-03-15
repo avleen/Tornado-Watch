@@ -13600,7 +13600,8 @@ CREATE TABLE alert_queue (
     alerted boolean DEFAULT false NOT NULL,
     registration_id character varying(4096),
     alert_type character varying(16),
-    reference_id integer
+    reference_id integer,
+    alert_date integer
 );
 
 
@@ -13856,6 +13857,13 @@ ALTER TABLE ONLY spatial_ref_sys
 
 
 --
+-- Name: alert_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX alert_date_idx ON alert_queue USING btree (alert_date);
+
+
+--
 -- Name: counties_the_geom_gist; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -13867,6 +13875,34 @@ CREATE INDEX counties_the_geom_gist ON counties USING gist (the_geom);
 --
 
 CREATE UNIQUE INDEX endtime_count_state_idx ON tornado_warnings USING btree (endtime, county, state);
+
+
+--
+-- Name: user_registration_create_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX user_registration_create_date_idx ON user_registration USING btree (create_date);
+
+
+--
+-- Name: user_registration_location_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX user_registration_location_idx ON user_registration USING gist (location);
+
+
+--
+-- Name: user_submits_create_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX user_submits_create_date_idx ON user_submits USING btree (create_date);
+
+
+--
+-- Name: user_submits_location_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX user_submits_location_idx ON user_submits USING gist (location);
 
 
 --
