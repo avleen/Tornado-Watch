@@ -49,8 +49,10 @@ def main():
     in_zone = check_submit_in_zone(lng, lat)
     if in_zone:
         priority = 't'
+        msg = 'Marker submitted'
     else:
         priority = 'f'
+        msg = 'You are not under a tornado watch!'
 
     cur = DB_CONN.cursor()
     sql = """INSERT INTO user_submits (registration_id, location, priority)
@@ -60,7 +62,7 @@ def main():
 
     print "Content-type: text/plain"
     print
-    print cgi.escape("Marker submitted")
+    print cgi.escape(msg)
 
 
 if __name__ == "__main__":

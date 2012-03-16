@@ -10,6 +10,9 @@ import time
 import urllib
 import urllib2
 
+sys.path.insert(0, '/www/silverwraith.com/canonical/tw.silverwraith.com')
+import pidlock
+
 num_threads=20
 queue = Queue()
 DB_CONN = None
@@ -142,4 +145,7 @@ def main():
 
 
 if __name__ == "__main__":
+    pidlocking = pidlock.Pidlock('send_alerts')
+    pidlocking.start()
     main()
+    pidlocking.stop()

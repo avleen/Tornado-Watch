@@ -7,6 +7,9 @@ import re
 import sys
 import time
 
+sys.path.insert(0, '/www/silverwraith.com/canonical/tw.silverwraith.com')
+import pidlock
+
 DB_CONN = None
 DEBUG = False
 
@@ -125,4 +128,7 @@ if __name__ == '__main__':
     if sys.argv[1:] and sys.argv[1] == '-d':
             # First add the entry to the db, then pass it back
         DEBUG = True
+    pidlocking = pidlock.Pidlock('pull_weatherfeed')
+    pidlocking.start()
     main()
+    pidlocking.stop()
