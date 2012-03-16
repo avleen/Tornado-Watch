@@ -16,9 +16,12 @@ public final class R {
         public static final int ic_maps_indicator_current_position=0x7f020002;
         public static final int locationfound=0x7f020003;
         public static final int locationplace=0x7f020004;
-        public static final int preferences=0x7f020005;
+        public static final int locationplacered=0x7f020005;
+        public static final int logo=0x7f020006;
+        public static final int preferences=0x7f020007;
     }
     public static final class id {
+        public static final int get_markers=0x7f060007;
         public static final int mapView=0x7f060001;
         public static final int my_location=0x7f060004;
         public static final int place_marker=0x7f060005;

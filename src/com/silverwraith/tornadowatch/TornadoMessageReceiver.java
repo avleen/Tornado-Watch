@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class TornadoMessageReceiver extends BroadcastReceiver {
@@ -30,19 +32,31 @@ public class TornadoMessageReceiver extends BroadcastReceiver {
 	}
 	
 	public void createNotification(Context context, String payload) {
+		// Get notification preferences
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		boolean high_priority_play_sound = prefs.getBoolean("high_priority_play_sound", true);
+		boolean high_priority_vibrate = prefs.getBoolean("high_priority_vibrate", true);
+				
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.androidmarker,
-				"Message received", System.currentTimeMillis());
+		Notification notification = new Notification(R.drawable.logo,
+				"New tornados reported in your area", System.currentTimeMillis());
 		// Hide the notification after its selected
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		if (high_priority_play_sound == true) {
+			notification.defaults |= Notification.DEFAULT_SOUND;
+		}
+		if (high_priority_vibrate == true) {
+			notification.defaults |= Notification.DEFAULT_VIBRATE;
+		}
 
 		Intent intent = new Intent(context, TornadoWatchActivity.class);
 		intent.putExtra("payload", payload);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				intent, 0);
-		notification.setLatestEventInfo(context, "Message",
-				"New tornado in your area", pendingIntent);
+		notification.setLatestEventInfo(context, "Tornado Watch",
+				"New tornado in your area!", pendingIntent);
 		notificationManager.notify(0, notification);
 	}
 

@@ -9,6 +9,9 @@
     <item android:id="@+id/preferences"
           android:icon="@drawable/preferences"
           android:title="Preferences" />
+    <item android:id="@+id/get_markers"
+          android:icon="@drawable/locationplace"
+          android:title="Get latest sightings" />
     <!--  <item android:id="@+id/take_picture"
           android:icon="@drawable/ic_take_picture"
           android:title="@string/take_picture" />

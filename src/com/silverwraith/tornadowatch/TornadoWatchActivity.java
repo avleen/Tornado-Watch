@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,13 +55,16 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	public static final String AUTH = "authentication";
 	MapView mapView;
 	List<Overlay> mapOverlays;
-	Drawable drawable;
-	TornadoItemizedOverlay itemizedOverlay;
-    MyLocationOverlay myLocationOverlay;
+	Drawable drawableLow;
+	Drawable drawableHigh;
+	TornadoItemizedOverlay itemizedOverlayLow;
+	TornadoItemizedOverlay itemizedOverlayHigh;
+    static MyLocationOverlay myLocationOverlay;
     Boolean initialLocation = false;
     static String installationFile = "INSTALLATION";
     static String TAG = "TW";
     String registrationId = null; 
+    static String CGI_BASE = "http://tw.silverwraith.com/cgi-bin";
     
 	/** Called when the activity is first created. */
     @Override
@@ -98,6 +103,10 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	mapView = (MapView) findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(false);
+        getAndDrawMarkers("onCreate");
+    }
+    
+    public void getAndDrawMarkers(String markerCaller) {
         
         /* A test marker, sits over Mexico City. Mmmm burrito.
         * mapOverlays = mapView.getOverlays();
@@ -115,16 +124,42 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
          */
         
         try {
+        	Log.i(TAG, "About to download markers");
 			JSONArray json = downloadMarkers();
 			mapOverlays = mapView.getOverlays();
-			drawable = this.getResources().getDrawable(R.drawable.locationplace);
-			itemizedOverlay = new TornadoItemizedOverlay(drawable);
-			for (int i=0; i < json.length(); i++) {
-				JSONObject json_data = json.getJSONObject(i);
-	            GeoPoint point = new GeoPoint(json_data.getInt("lat"), json_data.getInt("lng"));
-	            itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
-	            mapOverlays.add(itemizedOverlay);
-	            mapView.postInvalidate();
+			drawableLow = this.getResources().getDrawable(R.drawable.locationplace);
+			drawableHigh = this.getResources().getDrawable(R.drawable.locationplacered);
+			itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
+			itemizedOverlayHigh = new TornadoItemizedOverlay(drawableHigh);
+			Log.i(TAG, "Number of markers found: " + json.length());
+			// Save the old overlays so we can compare them later
+			List<Overlay> oldOverlays = mapView.getOverlays();
+			if (json.length() > 0) {
+				if (!mapOverlays.isEmpty()) {
+					mapOverlays.clear();
+				}
+				for (int i=0; i < json.length(); i++) {
+					JSONObject json_data = json.getJSONObject(i);
+					float markerLat = Float.valueOf(json_data.getString("lat")) * 1000000;
+					float markerLng = Float.valueOf(json_data.getString("lng")) * 1000000;
+					String markerPri = json_data.getString("priority");
+					Log.i(TAG, "Marker: " + markerLat + "," + markerLng + "," + markerPri );
+	            	GeoPoint point = new GeoPoint((int)markerLat, (int)markerLng);
+	            	if (json_data.getString("priority") == "true") {
+	            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
+	            		mapOverlays.add(itemizedOverlayHigh);
+	            	} else {
+	            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
+	            		mapOverlays.add(itemizedOverlayLow);
+	            	}
+				}
+			}
+			if (mapOverlays != oldOverlays) {
+				Log.i(TAG, "New markers found!");
+				mapView.postInvalidate();
+				//createNotification(TornadoWatchActivity.this, "");
+			} else if (mapOverlays == oldOverlays && markerCaller == "UserRefresh") {
+				Toast.makeText(TornadoWatchActivity.this, "No change in tornado reports", Toast.LENGTH_SHORT).show();
 			}
 		} catch (MalformedURLException e) {
 			// Toast.makeText(TornadoWatchActivity.this, "Marker URL is malformed", Toast.LENGTH_SHORT).show();
@@ -163,7 +198,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
                 int myLng = myLocationOverlay.getMyLocation().getLongitudeE6();
                 int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
         		HttpClient client = new DefaultHttpClient();
-        		HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
+        		HttpPost post = new HttpPost(CGI_BASE + "/updatelocation.py");
         		// Get the current registrationId. This might be "nokey"!
         		registrationId = showRegistrationId();
         		if (registrationId != null) {        		
@@ -265,6 +300,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	        	return true;
 	        case R.id.preferences:
 	        	startActivity(new Intent("com.silverwraith.tornadowatch.TornadoPreferenceActivity"));
+	        case R.id.get_markers:
+	        	getAndDrawMarkers("UserRefresh");
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -274,7 +311,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		GeoPoint myLocationGeoPoint = myLocationOverlay.getMyLocation();
 		if (myLocationGeoPoint != null) {
 			mapView.getController().animateTo(myLocationGeoPoint);
-			mapView.getController().setZoom(10);
+			mapView.getController().setZoom(13);
 		} else {
 			if (initialLocation == false) {
 				Toast.makeText(this, "Cannot determine location", Toast.LENGTH_SHORT).show();
@@ -284,11 +321,11 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	
 	private void placeMarker() {		
 		mapOverlays = mapView.getOverlays();
-		drawable = this.getResources().getDrawable(R.drawable.locationplace);
-		itemizedOverlay = new TornadoItemizedOverlay(drawable);
+		drawableLow = this.getResources().getDrawable(R.drawable.locationplace);
+		itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
         GeoPoint point = myLocationOverlay.getMyLocation();
-        itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
-        mapOverlays.add(itemizedOverlay);
+        itemizedOverlayLow.addOverlay(new OverlayItem(point, "", ""));
+        mapOverlays.add(itemizedOverlayLow);
         mapView.postInvalidate();
         
         try {
@@ -299,8 +336,10 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	}
 	
 	public void submitCoordinates(int lng, int lat) throws MalformedURLException {
-		String queryString = "?lng=" + lng + "&lat=" + lat + "&registrationId=" + showRegistrationId();
-		URL url = new URL("http://tw.silverwraith.com/cgi-bin/user_submit.py" + queryString);
+		Float lngFloat = (float) (lng / 1000000);
+		Float latFloat = (float) (lat / 1000000);
+		String queryString = "?lng=" + lngFloat + "&lat=" + latFloat + "&registrationId=" + showRegistrationId();
+		URL url = new URL(CGI_BASE + "/user_submit.py" + queryString);
 		try {
 			URLConnection urlConnection = url.openConnection();
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -317,7 +356,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	}
 	
 	public static String downloadJSON() throws MalformedURLException, IOException {
-		String url = "http://silverwraith.com/tw.json";
+        Log.i(TAG, "Downloading markers");
+		String url = CGI_BASE + "/get_markers.py";
 		InputStream in = new URL(url).openStream();
 		InputStreamReader is = new InputStreamReader(in);
 		StringBuilder total = new StringBuilder();

@@ -19,14 +19,14 @@
             android:defaultValue="true"
         />
         
-		<RingtonePreference
+		<!-- <RingtonePreference
 		    android:key="high_priority_ringtone"
 		    android:ringtoneType="notification"
 		    android:title="Notification tone"
-		/>            
+		/>    -->         
     </PreferenceCategory>
 
-    <PreferenceCategory 
+    <!-- <PreferenceCategory 
         android:title="Low priority notifications"
         android:key="low_priority_notifications">
         
@@ -34,13 +34,13 @@
             android:key="low_priority_vibrate"
             android:summary="Vibrate on low-priority alerts"
             android:title="Vibrate" 
-            android:defaultValue="true"
+            android:defaultValue="1"
         />
 		<CheckBoxPreference 
             android:key="low_priority_play_sound"
             android:summary="Play sound on low-priority alerts"
             android:title="Play sound" 
-            android:defaultValue="true"
+            android:defaultValue="1"
         />
         
 		<RingtonePreference
@@ -48,5 +48,5 @@
 		    android:ringtoneType="notification"
 		    android:title="Notification tone"
 		/>            
-    </PreferenceCategory>    
+    </PreferenceCategory> -->    
 </PreferenceScreen>
