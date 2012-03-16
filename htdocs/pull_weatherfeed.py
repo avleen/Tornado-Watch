@@ -106,7 +106,7 @@ def print_debug(msg):
     """Print debug data in debug mode"""
 
     if DEBUG:
-        print msg
+        print "%s %s" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg)
     return
 
 

@@ -18,6 +18,7 @@ queue = Queue()
 DB_CONN = None
 AUTH_KEY = None
 BACKOFF = 0
+DEBUG = False
 
 def alert_runner(i, q):
     """Get people to alert, and alert them"""
@@ -25,7 +26,7 @@ def alert_runner(i, q):
 
     while True:
         if BACKOFF > 0:
-            print "BACKOFF IN EFFECT: %s seconds" % BACKOFF
+            print_debug("BACKOFF IN EFFECT: %s seconds" % BACKOFF)
             time.sleep(BACKOFF)
         serial_id, registration_id, alert_type = queue.get()
         if alert_type == "distance-low" or alert_type == "distance-high":
@@ -45,10 +46,10 @@ def alert_runner(i, q):
                                   urllib.urlencode(post_dict),
                                   headers)
         try:
-            print "Sending notification for %s" % alert_type
+            print_debug("Sending notification for %s" % alert_type)
             response = urllib2.urlopen(request)
             response_as_str = response.read()
-            print "Response: %s" % response_as_str
+            print_debug("Response: %s" % response_as_str)
             if not response_as_str.startswith("Error"):
                 if BACKOFF > 0:
                     BACKOFF = 0
@@ -65,7 +66,7 @@ def alert_runner(i, q):
                     BACKOFF = 0.1
                 else:
                     BACKOFF = BACKOFF * 1.5
-                print "Backoff increased. Error: " + response_as_str
+                print_debug("Backoff increased. Error: " + response_as_str)
                 msg = MIMEText("Uh oh!")
                 msg['Subject'] = 'Failed to alert user: ' + response_as_str
                 msg['From'] = 'postmaster@silverwraith.com'
@@ -76,14 +77,14 @@ def alert_runner(i, q):
                            msg.as_string())
                 s.quit()
         except urllib2.HTTPError, e:
-            print 'HTTPError ' + str(e)
+            print_debug('HTTPError ' + str(e))
 
 
 def make_db_conn():
     """Establish a database connection"""
 
     global DB_CONN
-    #print_debug('Setting up DB connection')
+    print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
 
 
@@ -91,12 +92,12 @@ def update_auth_key(submitted_key=None):
     global AUTH_KEY
 
     if submitted_key:
-        print "Updated auth key received in headers"
+        print_debug("Updated auth key received in headers")
         AUTH_KEY=submitted_key
         return
 
     if not AUTH_KEY:
-        print "Requesting new auth key"
+        print_debug("Requesting new auth key")
         auth_pass = open('AUTH_PASS').read()
         auth_post_dict = {'Email': 'avleen@gmail.com',
                 'Passwd': auth_pass,
@@ -110,8 +111,16 @@ def update_auth_key(submitted_key=None):
             if line.startswith('Auth='):
                 AUTH_KEY = line.split('=')[1]
         if not AUTH_KEY:
-            print "Cannot get AUTH KEY! Quitting!"
+            print_debug("Cannot get AUTH KEY! Quitting!")
             sys.exit(1)
+
+
+def print_debug(msg):
+    """Print debug data in debug mode"""
+
+    if DEBUG:
+        print "%s %s" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg)
+    return
 
 
 def main():
@@ -132,14 +141,13 @@ def main():
                                FROM alert_queue
                                WHERE alerted = 'f'"""
     while True:
-        sys.stderr.write("Selecting and sending alerts... ")
+        print_debug("Selecting and sending alerts... ")
         main_cur.execute(pending_alerts_sql)
-        sys.stderr.write(str(main_cur.rowcount) + " rows... ")
+        print_debug(str(main_cur.rowcount) + " rows... ")
         for row in main_cur:
-            print row
             queue.put(row)
         queue.join()
-        sys.stderr.write("done.\n")
+        print_debug("done.")
         time.sleep(5)
 
 
@@ -147,5 +155,7 @@ def main():
 if __name__ == "__main__":
     pidlocking = pidlock.Pidlock('send_alerts')
     pidlocking.start()
+    if sys.argv[1:] and sys.argv[1] == '-d':
+        DEBUG = True
     main()
     pidlocking.stop()
