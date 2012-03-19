@@ -13701,6 +13701,16 @@ CREATE TABLE geometry_columns (
 
 ALTER TABLE public.geometry_columns OWNER TO postgres;
 
+--
+-- Name: ps; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW ps AS
+    SELECT pg_stat_activity.procpid AS pid, pg_stat_activity.usename AS username, pg_stat_activity.waiting, (now() - pg_stat_activity.query_start) AS age, pg_stat_activity.current_query AS query FROM pg_stat_activity WHERE (pg_stat_activity.current_query <> '<IDLE>'::text) ORDER BY (now() - pg_stat_activity.query_start) DESC;
+
+
+ALTER TABLE public.ps OWNER TO postgres;
+
 SET default_with_oids = false;
 
 --
@@ -13719,6 +13729,17 @@ CREATE TABLE spatial_ref_sys (
 ALTER TABLE public.spatial_ref_sys OWNER TO postgres;
 
 --
+-- Name: tmploc; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tmploc (
+    location geography(Point,4326)
+);
+
+
+ALTER TABLE public.tmploc OWNER TO postgres;
+
+--
 -- Name: tornado_warnings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -13732,6 +13753,16 @@ CREATE TABLE tornado_warnings (
 
 
 ALTER TABLE public.tornado_warnings OWNER TO postgres;
+
+--
+-- Name: tornado_warnings_geo; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW tornado_warnings_geo AS
+    SELECT tornado_warnings.id, to_timestamp((tornado_warnings.starttime)::double precision) AS starttime, to_timestamp((tornado_warnings.endtime)::double precision) AS endtime, tornado_warnings.county, tornado_warnings.state FROM tornado_warnings;
+
+
+ALTER TABLE public.tornado_warnings_geo OWNER TO postgres;
 
 --
 -- Name: tornado_warnings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -13762,11 +13793,22 @@ CREATE TABLE user_registration (
     device_id character varying(128),
     registration_id character varying(4096) NOT NULL,
     location geometry,
-    create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL
+    create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
+    update_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL
 );
 
 
 ALTER TABLE public.user_registration OWNER TO postgres;
+
+--
+-- Name: user_registration_geo; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW user_registration_geo AS
+    SELECT to_timestamp((u.create_date)::double precision) AS create_date, to_timestamp((u.update_date)::double precision) AS update_date, c.county, c.state, u.registration_id FROM user_registration u, counties c WHERE st_intersects(u.location, c.the_geom);
+
+
+ALTER TABLE public.user_registration_geo OWNER TO postgres;
 
 --
 -- Name: user_submits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -13782,6 +13824,16 @@ CREATE TABLE user_submits (
 
 
 ALTER TABLE public.user_submits OWNER TO postgres;
+
+--
+-- Name: user_submits_geo; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW user_submits_geo AS
+    SELECT u.id, to_timestamp((u.create_date)::double precision) AS to_timestamp, u.priority, c.county, c.state FROM user_submits u, counties c WHERE st_intersects(u.location, c.the_geom);
+
+
+ALTER TABLE public.user_submits_geo OWNER TO postgres;
 
 --
 -- Name: user_submits_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -13861,6 +13913,20 @@ ALTER TABLE ONLY spatial_ref_sys
 --
 
 CREATE INDEX alert_date_idx ON alert_queue USING btree (alert_date);
+
+
+--
+-- Name: counties_county_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX counties_county_idx ON counties USING btree (county);
+
+
+--
+-- Name: counties_state_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX counties_state_idx ON counties USING btree (state);
 
 
 --

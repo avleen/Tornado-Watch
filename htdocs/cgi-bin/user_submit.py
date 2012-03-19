@@ -43,6 +43,10 @@ def main():
     if not lng or not lat:
         return
 
+    # lng and lat in postgis are decimal, not microdegrees
+    lng = float(lng) / 1000000
+    lat = float(lat) / 1000000
+
     make_db_conn()
 
     # Make sure we're in a tornado alert zone

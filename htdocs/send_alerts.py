@@ -59,8 +59,26 @@ def alert_runner(i, q):
                             WHERE id = %s"""
                 cursor = DB_CONN.cursor()
                 cursor.execute(sql, (serial_id,))
-                DB_CONN.commit()
+                cursor.close()
                 q.task_done()
+            elif response_as_str == "Error=NotRegistered":
+                # The user is not registered any more! Delete them from the DB!
+                cursor = DB_CONN.cursor()
+                regid_sql = """SELECT registration_id FROM alert_queue
+                                WHERE id = %s"""
+                cursor.execute(regid_sql, (serial_id,))
+                registration_id = cursor.fetchone()[0]
+                cursor.close()
+
+                print_debug("%s is no longer registered" % registration_id)
+                delete_cursor = DB_CONN.cursor()
+                delete_sql = """DELETE FROM alert_queue
+                                    WHERE registration_id = %s"""
+                delete_cursor.execute(delete_sql, (registration_id,))
+                delete_sql = """DELETE FROM user_registration
+                                    WHERE registration_id = %s"""
+                delete_cursor.execute(delete_sql, (registration_id,))
+                delete_cursor.close()
             else:
                 if BACKOFF == 0:
                     BACKOFF = 0.1
@@ -86,6 +104,7 @@ def make_db_conn():
     global DB_CONN
     print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 
 def update_auth_key(submitted_key=None):
@@ -119,7 +138,8 @@ def print_debug(msg):
     """Print debug data in debug mode"""
 
     if DEBUG:
-        print "%s %s" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg)
+        logfile = '/usr/local/www/silverwraith.com/canonical/tw.silverwraith.com/logs/send_alerts.log'
+        open(logfile, 'a').write("%s %s\n" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg))
     return
 
 
@@ -136,11 +156,11 @@ def main():
 
     ### Loop over the queue to find alerts
     make_db_conn()
-    main_cur = DB_CONN.cursor()
     pending_alerts_sql = """SELECT id, registration_id, alert_type
                                FROM alert_queue
                                WHERE alerted = 'f'"""
     while True:
+        main_cur = DB_CONN.cursor()
         print_debug("Selecting and sending alerts... ")
         main_cur.execute(pending_alerts_sql)
         print_debug(str(main_cur.rowcount) + " rows... ")
@@ -148,6 +168,7 @@ def main():
             queue.put(row)
         queue.join()
         print_debug("done.")
+        main_cur.close()
         time.sleep(5)
 
 

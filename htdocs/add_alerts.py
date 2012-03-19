@@ -9,7 +9,6 @@ import pidlock
 
 DB_CONN = None
 DEBUG = False
-TIME = time.mktime(time.gmtime())
 
 def add_alert(registration_id, reference_id, alert_type):
     """Add an alert to the alert_queue to warn a user"""
@@ -31,7 +30,7 @@ def add_alert(registration_id, reference_id, alert_type):
         print_debug('Adding alert to db %s' %
                     (sql % (registration_id, reference_id, alert_type)))
         cur.execute(sql, (registration_id, reference_id, alert_type))
-        DB_CONN.commit()
+    cur.close()
 
 
 def make_db_conn():
@@ -40,6 +39,7 @@ def make_db_conn():
     global DB_CONN
     print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 
 def print_debug(msg):
@@ -55,11 +55,12 @@ def main():
 
     # Some initial setup
     make_db_conn()
-    main_cur = DB_CONN.cursor()
 
     # The rest of this is basically a big loop with a sleep
     while True:
+        time_now = time.mktime(time.localtime())
         time.sleep(5)
+        main_cur = DB_CONN.cursor()
         # Get a list of users in current tornado alert zones
         sql = """SELECT r.registration_id, t.id
                     FROM user_registration r, counties c, tornado_warnings t
@@ -68,7 +69,7 @@ def main():
                     AND t.starttime < %s
                     AND t.endtime > %s"""
         print_debug('Getting the list of users in tornado zones')
-        main_cur.execute(sql, (TIME, TIME))
+        main_cur.execute(sql, (time_now, time_now))
         print_debug('%s users found in tornado zones' % main_cur.rowcount)
 
         # See if there is an alert on the queue for each user in the zone
@@ -89,17 +90,21 @@ def main():
                 print_debug('They dont! Adding an alert. Hope they get it soon.')
                 add_alert(registration_id, reference_id, 'zone')
 
-            # Check if a user's last known location (r.location) is within 10mi of a
+            # Check if a user's last known location (r.location) is within 20mi of a
             # reported tornado (s.location) which was reported in the last 30
             # minutes.
             print_debug('Checking if user %s is near a user submittion' % registration_id)
             check_sql = """SELECT r.registration_id, s.priority, s.id
                             FROM user_registration r, user_submits s
-                            WHERE distance(r.location, s.location) < 16093
+                            WHERE distance(r.location, s.location) < 32186
                             AND s.create_date < %s
                             AND r.registration_id = %s"""
-            check_cur.execute(check_sql, (TIME - 1800, registration_id))
+            check_cur.execute(check_sql, (time_now - 1800, registration_id))
             check_row = check_cur.fetchone()
+            # If we didn't find a match against user_submit, continue
+            if not check_row:
+                print_debug('They are not, carry on.')
+                continue
             user_submit_id = check_row[2]
             if check_row[1] == 't':
                 distance_type = 'distance-high'
@@ -112,14 +117,17 @@ def main():
                 print_debug('They are! Lets see if we need to alert them.')
 
                 check_sql = """SELECT id FROM alert_queue
-                                WHERE alert_type = 'distance'
-                                AND create_date < %s
+                                WHERE alert_type LIKE 'distance%%'
+                                AND create_date > %s
                                 AND registration_id = %s"""
-                check_cur.execute(check_sql, (TIME - 1800, registration_id))
+                check_cur.execute(check_sql, (time_now - 1800, registration_id))
                 if check_cur.rowcount == 0:
                     print_debug('We do - they havent had an alert in 30 minutes.')
                     add_alert(registration_id, user_submit_id, distance_type)
-
+                else:
+                    print_debug('We dont!')
+            check_cur.close()
+        main_cur.close()
     return
 
 

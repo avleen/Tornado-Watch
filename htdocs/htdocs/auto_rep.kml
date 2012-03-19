@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+    <Style id="yellowLineGreenPoly">
+      <LineStyle>
+        <color>7f00ffff</color>
+        <width>4</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7f00ff00</color>
+      </PolyStyle>
+    </Style>
+<Folder>
+<styleUrl>#yellowLineGreenPoly</styleUrl>
+ <Placemark><Point><coordinates>-94.129881,36.44378</coordinates></Point><name>Benton County, AR</name><description>Benton County, AR</description></Placemark>
+ <Placemark><Point><coordinates>-94.129899,36.443964</coordinates></Point><name>Benton County, AR</name><description>Benton County, AR</description></Placemark>
+ <Placemark><Point><coordinates>-117.249639,33.165347</coordinates></Point><name>San Diego County, CA</name><description>San Diego County, CA</description></Placemark>
+ <Placemark><Point><coordinates>-97.69944,31.070068</coordinates></Point><name>Bell County, TX</name><description>Bell County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-88.463113,42.431058</coordinates></Point><name>McHenry County, IL</name><description>McHenry County, IL</description></Placemark>
+ <Placemark><Point><coordinates>-85.832592,42.895777</coordinates></Point><name>Ottawa County, MI</name><description>Ottawa County, MI</description></Placemark>
+ <Placemark><Point><coordinates>-85.815412,42.888355</coordinates></Point><name>Ottawa County, MI</name><description>Ottawa County, MI</description></Placemark>
+ <Placemark><Point><coordinates>-97.526391,35.32462</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.678855,35.480616</coordinates></Point><name>Canadian County, OK</name><description>Canadian County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.012662,32.735501</coordinates></Point><name>Dallas County, TX</name><description>Dallas County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.569951,32.897046</coordinates></Point><name>Parker County, TX</name><description>Parker County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.113114,36.104675</coordinates></Point><name>Payne County, OK</name><description>Payne County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-95.860821,36.075275</coordinates></Point><name>Tulsa County, OK</name><description>Tulsa County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-93.454723,44.727593</coordinates></Point><name>Scott County, MN</name><description>Scott County, MN</description></Placemark>
+ <Placemark><Point><coordinates>-97.557617,35.021281</coordinates></Point><name>McClain County, OK</name><description>McClain County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-122.661946,47.57101</coordinates></Point><name>Kitsap County, WA</name><description>Kitsap County, WA</description></Placemark>
+ <Placemark><Point><coordinates>-90.920862,30.235977</coordinates></Point><name>Ascension Parish, LA</name><description>Ascension Parish, LA</description></Placemark>
+ <Placemark><Point><coordinates>-97.523536,35.319004</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-88.708778,33.826116</coordinates></Point><name>Monroe County, MS</name><description>Monroe County, MS</description></Placemark>
+ <Placemark><Point><coordinates>-97.667408,35.21278</coordinates></Point><name>McClain County, OK</name><description>McClain County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.429645,35.610692</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-83.648286,42.796302</coordinates></Point><name>Oakland County, MI</name><description>Oakland County, MI</description></Placemark>
+ <Placemark><Point><coordinates>-85.620484,40.857972</coordinates></Point><name>Huntington County, IN</name><description>Huntington County, IN</description></Placemark>
+ <Placemark><Point><coordinates>-97.321996,35.019903</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-96.899767,35.503991</coordinates></Point><name>Lincoln County, OK</name><description>Lincoln County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-111.74525,40.381279</coordinates></Point><name>Utah County, UT</name><description>Utah County, UT</description></Placemark>
+ <Placemark><Point><coordinates>-116.990271,33.82093</coordinates></Point><name>Riverside County, CA</name><description>Riverside County, CA</description></Placemark>
+ <Placemark><Point><coordinates>-97.523385,35.318888</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.946094,35.013107</coordinates></Point><name>Grady County, OK</name><description>Grady County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.454593,35.648269</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-81.283804,41.70854</coordinates></Point><name>Lake County, OH</name><description>Lake County, OH</description></Placemark>
+ <Placemark><Point><coordinates>-122.805481,44.809038</coordinates></Point><name>Marion County, OR</name><description>Marion County, OR</description></Placemark>
+ <Placemark><Point><coordinates>-82.879184,39.972346</coordinates></Point><name>Franklin County, OH</name><description>Franklin County, OH</description></Placemark>
+ <Placemark><Point><coordinates>-97.607178,35.187625</coordinates></Point><name>McClain County, OK</name><description>McClain County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-80.014393,40.698203</coordinates></Point><name>Butler County, PA</name><description>Butler County, PA</description></Placemark>
+ <Placemark><Point><coordinates>-97.530684,35.362961</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-105.010494,39.899822</coordinates></Point><name>Adams County, CO</name><description>Adams County, CO</description></Placemark>
+ <Placemark><Point><coordinates>-97.387222,35.140729</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-99.211045,38.096326</coordinates></Point><name>Pawnee County, KS</name><description>Pawnee County, KS</description></Placemark>
+ <Placemark><Point><coordinates>-96.800102,33.131905</coordinates></Point><name>Collin County, TX</name><description>Collin County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.555008,35.39225</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-101.537157,34.184251</coordinates></Point><name>Floyd County, TX</name><description>Floyd County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.372022,35.42736</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-100.604574,35.2351</coordinates></Point><name>Gray County, TX</name><description>Gray County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-81.83642,38.38129</coordinates></Point><name>Kanawha County, WV</name><description>Kanawha County, WV</description></Placemark>
+ <Placemark><Point><coordinates>-116.618687,43.598227</coordinates></Point><name>Canyon County, ID</name><description>Canyon County, ID</description></Placemark>
+ <Placemark><Point><coordinates>-95.874817,41.255146</coordinates></Point><name>Pottawattamie County, IA</name><description>Pottawattamie County, IA</description></Placemark>
+ <Placemark><Point><coordinates>-99.299361,36.149944</coordinates></Point><name>Dewey County, OK</name><description>Dewey County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-102.148089,32.003147</coordinates></Point><name>Midland County, TX</name><description>Midland County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-101.928421,33.532794</coordinates></Point><name>Lubbock County, TX</name><description>Lubbock County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.578039,35.41102</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.488989,35.348857</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.42239,35.191156</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.47516,35.329384</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-98.486864,36.216249</coordinates></Point><name>Major County, OK</name><description>Major County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.54964,34.203125</coordinates></Point><name>Carter County, OK</name><description>Carter County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.453997,35.657761</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.212319,35.119141</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-101.793544,35.235466</coordinates></Point><name>Potter County, TX</name><description>Potter County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-97.490488,35.354525</coordinates></Point><name>Cleveland County, OK</name><description>Cleveland County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-96.099376,41.260353</coordinates></Point><name>Douglas County, NE</name><description>Douglas County, NE</description></Placemark>
+ <Placemark><Point><coordinates>-97.894101,36.111048</coordinates></Point><name>Kingfisher County, OK</name><description>Kingfisher County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.368245,35.4401</coordinates></Point><name>Oklahoma County, OK</name><description>Oklahoma County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-92.847406,34.755083</coordinates></Point><name>Saline County, AR</name><description>Saline County, AR</description></Placemark>
+ <Placemark><Point><coordinates>-86.089016,39.870347</coordinates></Point><name>Marion County, IN</name><description>Marion County, IN</description></Placemark>
+ <Placemark><Point><coordinates>-96.277035,33.610341</coordinates></Point><name>Fannin County, TX</name><description>Fannin County, TX</description></Placemark>
+ <Placemark><Point><coordinates>-95.963639,35.612369</coordinates></Point><name>Okmulgee County, OK</name><description>Okmulgee County, OK</description></Placemark>
+ <Placemark><Point><coordinates>-97.332374,37.68695</coordinates></Point><name>Sedgwick County, KS</name><description>Sedgwick County, KS</description></Placemark>
+ <Placemark><Point><coordinates>-94.17443,45.603594</coordinates></Point><name>Benton County, MN</name><description>Benton County, MN</description></Placemark>
+ <Placemark><Point><coordinates>-88.131984,41.545322</coordinates></Point><name>Will County, IL</name><description>Will County, IL</description></Placemark>
+
+
+</Folder>
+</Document>
+</kml>

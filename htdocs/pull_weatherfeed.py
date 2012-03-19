@@ -56,8 +56,8 @@ def get_tornado_warnings(feed):
             debug_mail('State not found', entry)
             continue
 
-        starttime = time.mktime(feedparser._parse_date(entry['effective']))
-        endtime = time.mktime(feedparser._parse_date(entry['expires']))
+        starttime = time.mktime(feedparser._parse_date(entry['effective'])) - time.timezone
+        endtime = time.mktime(feedparser._parse_date(entry['expires'])) - time.timezone
         for affected_county in affected_counties:
             yield affected_county, affected_state, starttime, endtime
 
