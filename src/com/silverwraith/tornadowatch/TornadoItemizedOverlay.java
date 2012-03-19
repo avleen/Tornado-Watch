@@ -26,7 +26,7 @@ public class TornadoItemizedOverlay extends ItemizedOverlay {
 
 	public TornadoItemizedOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
-		
+		populate();
 	}
 	
 

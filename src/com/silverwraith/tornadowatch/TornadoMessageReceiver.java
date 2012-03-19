@@ -51,13 +51,15 @@ public class TornadoMessageReceiver extends BroadcastReceiver {
 			notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
 
-		Intent intent = new Intent(context, TornadoWatchActivity.class);
-		intent.putExtra("payload", payload);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+		if (payload != null && payload.length() > 0) {
+			Intent intent = new Intent(context, TornadoWatchActivity.class);
+			intent.putExtra("payload", payload);
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				intent, 0);
-		notification.setLatestEventInfo(context, "Tornado Watch",
+			notification.setLatestEventInfo(context, "Tornado Watch",
 				"New tornado in your area!", pendingIntent);
-		notificationManager.notify(0, notification);
+			notificationManager.notify(0, notification);
+		}
 	}
 
 }

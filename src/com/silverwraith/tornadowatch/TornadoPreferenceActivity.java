@@ -16,8 +16,9 @@ public class TornadoPreferenceActivity extends PreferenceActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, 0, "Show current settings");
-		return super.onCreateOptionsMenu(menu);		
+		// menu.add(Menu.NONE, 0, 0, "Show current settings");
+		// return super.onCreateOptionsMenu(menu);
+		return false;
 	}
 	
 	@Override

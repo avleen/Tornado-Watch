@@ -22,11 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import com.google.android.maps.GeoPoint;
@@ -73,28 +74,34 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         setContentView(R.layout.main); */
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.main);
+    	try {
+			if(isDebugBuild()) {
+				setContentView(R.layout.main_debug);
+			} else {
+				setContentView(R.layout.main);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
     	// Do our registration dance first
     	class RegisterApp extends AsyncTask<String, Void, String> {
     		@Override
 			protected String doInBackground(String... params) {
-    			register();
-    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(TornadoWatchActivity.this);
-    			String registrationId = prefs.getString(AUTH, "nokey");
-    			Log.d("Tornado Debug", registrationId);
-				return registrationId;
-    		}
-    		public void register() {
     			Log.w("C2DM", "start registration process");
     			Intent intent = new Intent("com.google.android.c2dm.intent.REGISTER");
     			intent.putExtra("app", PendingIntent.getBroadcast(TornadoWatchActivity.this, 0, new Intent(), 0));
     			intent.putExtra("sender", "avleen@gmail.com");
     			startService(intent);
+    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(TornadoWatchActivity.this);
+    			String registrationId = prefs.getString(AUTH, "nokey");
+    			Log.d("Tornado Debug", registrationId);
+				return registrationId;
     		}
     	}
     	RegisterApp do_registration = new RegisterApp();
-    	do_registration.execute(new String[] { "" });
+    	do_registration.execute("");
     	
     	// Start the LocationListener service
     	Log.i(TAG, "Starting location tracker service");
@@ -104,6 +111,12 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(false);
         getAndDrawMarkers("onCreate");
+    }
+    
+    public boolean isDebugBuild() throws Exception {
+       PackageManager pm = this.getPackageManager();
+       PackageInfo pi = pm.getPackageInfo(this.getPackageName(), 0);
+       return ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
     }
     
     public void getAndDrawMarkers(String markerCaller) {
@@ -311,7 +324,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		GeoPoint myLocationGeoPoint = myLocationOverlay.getMyLocation();
 		if (myLocationGeoPoint != null) {
 			mapView.getController().animateTo(myLocationGeoPoint);
-			mapView.getController().setZoom(13);
+			mapView.getController().setZoom(10);
 		} else {
 			if (initialLocation == false) {
 				Toast.makeText(this, "Cannot determine location", Toast.LENGTH_SHORT).show();
@@ -336,9 +349,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	}
 	
 	public void submitCoordinates(int lng, int lat) throws MalformedURLException {
-		Float lngFloat = (float) (lng / 1000000);
-		Float latFloat = (float) (lat / 1000000);
-		String queryString = "?lng=" + lngFloat + "&lat=" + latFloat + "&registrationId=" + showRegistrationId();
+		String queryString = "?lng=" + lng + "&lat=" + lat + "&registrationId=" + showRegistrationId();
 		URL url = new URL(CGI_BASE + "/user_submit.py" + queryString);
 		try {
 			URLConnection urlConnection = url.openConnection();
@@ -346,10 +357,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 			InputStreamReader is = new InputStreamReader(in);
 			BufferedReader br = new BufferedReader(is);
 			String read = br.readLine();
-
-			while(read != null) {
-			    read = br.readLine();
-			}
+			Log.d(TAG, read);
+			Toast.makeText(this, read, Toast.LENGTH_SHORT).show();
 		} catch (IOException e) {
 			Toast.makeText(this, "Unable to submit URL - try again!", Toast.LENGTH_SHORT).show();
 		}
@@ -378,7 +387,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 
 	public String showRegistrationId() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String registrationId = prefs.getString(AUTH, null);
+		String registrationId = prefs.getString(AUTH, "None");
 		Log.d("C2DM RegId requested", registrationId);
 		return registrationId;
 

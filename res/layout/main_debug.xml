@@ -9,7 +9,7 @@
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
-        android:apiKey="01e6tYGHwwlE_e70jvv3iVV0nWftfnbc0uFz27g"
+        android:apiKey="01e6tYGHwwlFhgDdVJUleS6N-N3mXptbjJpx8ig"
         />
 
     <LinearLayout android:id="@+id/zoom" 
