@@ -24,6 +24,7 @@ def check_submit_in_zone(lng, lat):
                 AND t.endtime > date_part('epoch', now())
                 AND t.starttime < date_part('epoch', now())"""
     #open('/tmp/av', 'w').write(cur.mogrify(sql, (lng, lat)))
+    cur.execute(sql, (lng, lat))
     if cur.rowcount == 0:
         return False
     else:
@@ -42,6 +43,8 @@ def main():
     registration_id = re.sub('[^A-Za-z0-9_\-]+', '', registration_id)
     if not lng or not lat:
         return
+    if lng < 10000 or lat < 10000:
+        return
 
     # lng and lat in postgis are decimal, not microdegrees
     lng = float(lng) / 1000000
@@ -59,6 +62,15 @@ def main():
         msg = 'You are not under a tornado watch!'
 
     cur = DB_CONN.cursor()
+    # First make sure the user hasn't submitted an alert already in the last 30
+    # mins.
+    check_sql = """SELECT id FROM user_submits
+                    WHERE registration_id = %s
+                    AND create_date > (date_part('epoch', now()) - 1800)"""
+    cur.execute(check_sql, (registration_id,))
+    if cur.rowcount > 0:
+        return
+
     sql = """INSERT INTO user_submits (registration_id, location, priority)
                 VALUES (%s, makepoint(%s, %s), %s)"""
     cur.execute(sql, (registration_id, lng, lat, priority))

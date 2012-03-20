@@ -46,7 +46,8 @@ def print_debug(msg):
     """Print debug data in debug mode"""
 
     if DEBUG:
-        print "%s %s" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg)
+        logfile = '/usr/local/www/silverwraith.com/canonical/tw.silverwraith.com/logs/add_alerts.log'
+        open(logfile, 'a').write("%s %s\n" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg))
     return
 
 
@@ -93,18 +94,19 @@ def main():
             # Check if a user's last known location (r.location) is within 20mi of a
             # reported tornado (s.location) which was reported in the last 30
             # minutes.
-            print_debug('Checking if user %s is near a user submittion' % registration_id)
+            print_debug('Checking if user %s is near TWO user submission' % registration_id)
             check_sql = """SELECT r.registration_id, s.priority, s.id
                             FROM user_registration r, user_submits s
                             WHERE distance(r.location, s.location) < 32186
                             AND s.create_date < %s
                             AND r.registration_id = %s"""
             check_cur.execute(check_sql, (time_now - 1800, registration_id))
-            check_row = check_cur.fetchone()
             # If we didn't find a match against user_submit, continue
-            if not check_row:
+            if not check_cur.rowcount > 1:
                 print_debug('They are not, carry on.')
+                check_cur.close()
                 continue
+            check_row = check_cur.fetchone()
             user_submit_id = check_row[2]
             if check_row[1] == 't':
                 distance_type = 'distance-high'
@@ -113,9 +115,11 @@ def main():
 
             # If we got a result back, see if there has been an alert in the last 30
             # minutes. If so, don't alert again. Otherwise, warn them!
-            if check_cur.rowcount > 0:
-                print_debug('They are! Lets see if we need to alert them.')
-
+            if check_cur.rowcount > 1:
+                print_debug('They are! Near:')
+                for close_row in check_cur:
+                    print_debug(close_row)
+                print_debug('Lets see if we need to alert them.')
                 check_sql = """SELECT id FROM alert_queue
                                 WHERE alert_type LIKE 'distance%%'
                                 AND create_date > %s

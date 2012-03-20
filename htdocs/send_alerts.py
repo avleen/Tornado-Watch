@@ -79,6 +79,7 @@ def alert_runner(i, q):
                                     WHERE registration_id = %s"""
                 delete_cursor.execute(delete_sql, (registration_id,))
                 delete_cursor.close()
+                q.task_done()
             else:
                 if BACKOFF == 0:
                     BACKOFF = 0.1
@@ -94,6 +95,7 @@ def alert_runner(i, q):
                            ['postmaster@silverwraith.com'],
                            msg.as_string())
                 s.quit()
+                q.task_done()
         except urllib2.HTTPError, e:
             print_debug('HTTPError ' + str(e))
 

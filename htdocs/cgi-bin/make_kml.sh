@@ -2,6 +2,7 @@
 
 mydir=$( dirname $0 )
 kmlfile=${mydir}/../htdocs/auto_rep.kml
+kmlfilez=${mydir}/../htdocs/auto_rep.kmz
 
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' > ${kmlfile}
@@ -27,6 +28,7 @@ echo '</Folder>' >> ${kmlfile}
 echo '</Document>' >> ${kmlfile}
 echo '</kml>' >> ${kmlfile}
 
+#gzip -v9c ${kmlfile} > ${kmlfilez}
 echo 'Content-type: text/html'
 echo 'Location: http://maps.google.com/maps?q=http:%2F%2Ftw.silverwraith.com%2Fauto_rep.kml'
 echo

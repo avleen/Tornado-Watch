@@ -13830,7 +13830,7 @@ ALTER TABLE public.user_submits OWNER TO postgres;
 --
 
 CREATE VIEW user_submits_geo AS
-    SELECT u.id, to_timestamp((u.create_date)::double precision) AS to_timestamp, u.priority, c.county, c.state FROM user_submits u, counties c WHERE st_intersects(u.location, c.the_geom);
+    SELECT u.id, to_timestamp((u.create_date)::double precision) AS create_date, u.priority, c.county, c.state, x(u.location) AS x, y(u.location) AS y, u.registration_id FROM user_submits u, counties c WHERE st_intersects(u.location, c.the_geom);
 
 
 ALTER TABLE public.user_submits_geo OWNER TO postgres;
