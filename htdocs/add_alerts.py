@@ -97,7 +97,7 @@ def main():
             print_debug('Checking if user %s is near TWO user submission' % registration_id)
             check_sql = """SELECT r.registration_id, s.priority, s.id
                             FROM user_registration r, user_submits s
-                            WHERE distance(r.location, s.location) < 32186
+                            WHERE ST_DWithin(r.location, s.location, 32186, false)
                             AND s.create_date < %s
                             AND r.registration_id = %s"""
             check_cur.execute(check_sql, (time_now - 1800, registration_id))
