@@ -1,0 +1,40 @@
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/threading.py", line 532, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.6/threading.py", line 484, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/www/silverwraith.com/canonical/tw.silverwraith.com/send_alerts.py", line 70, in alert_runner
+    registration_id = cursor.fetchone()[0]
+TypeError: 'NoneType' object is unsubscriptable
+
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/threading.py", line 532, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.6/threading.py", line 484, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/www/silverwraith.com/canonical/tw.silverwraith.com/send_alerts.py", line 70, in alert_runner
+    registration_id = cursor.fetchone()[0]
+TypeError: 'NoneType' object is unsubscriptable
+
+Exception in thread Thread-3:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/threading.py", line 532, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.6/threading.py", line 484, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/www/silverwraith.com/canonical/tw.silverwraith.com/send_alerts.py", line 70, in alert_runner
+    registration_id = cursor.fetchone()[0]
+TypeError: 'NoneType' object is unsubscriptable
+
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/threading.py", line 532, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.6/threading.py", line 484, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/www/silverwraith.com/canonical/tw.silverwraith.com/send_alerts.py", line 70, in alert_runner
+    registration_id = cursor.fetchone()[0]
+TypeError: 'NoneType' object is unsubscriptable
+

@@ -13748,7 +13748,8 @@ CREATE TABLE tornado_warnings (
     starttime integer NOT NULL,
     endtime integer NOT NULL,
     county character varying(255),
-    state character(2)
+    state character(2),
+    alert_type character varying(8)
 );
 
 

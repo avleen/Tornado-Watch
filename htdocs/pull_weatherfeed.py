@@ -55,36 +55,52 @@ def get_tornado_warnings(feed):
             print_debug('State not found:\n' + entry)
             debug_mail('State not found', entry)
             continue
+        if 'TornadoWatch' in entry['id']:
+            alert_type='watch'
+        elif 'TornadoWarning' in entry['id']:
+            alert_type='warning'
+        else:
+            alert_type='Unknown'
 
         starttime = time.mktime(feedparser._parse_date(entry['effective'])) - time.timezone
         endtime = time.mktime(feedparser._parse_date(entry['expires'])) - time.timezone
         for affected_county in affected_counties:
-            yield affected_county, affected_state, starttime, endtime
+            yield affected_county, affected_state, starttime, endtime, alert_type
 
 
-def add_warning(county, state, starttime, endtime):
+def add_warning(county, state, starttime, endtime, alert_type):
     """Take information about a current tornado warning and save it in the DB"""
 
     cur = DB_CONN.cursor()
 
     # Does the warning currently exist in the DB? If so, don't add again!
-    sql = """SELECT starttime, endtime, county, state FROM tornado_warnings
+    # We actually need to check if the current check is there, see if it needs
+    # to be upgraded or downgraded.
+    sql = """SELECT id, starttime, endtime, county, state, alert_type FROM tornado_warnings
                 WHERE starttime = %s
                 AND endtime = %s
                 AND county = %s
                 AND state = %s"""
     cur.execute(sql, (starttime, endtime, county, state))
-    if cur.rowcount == 0:
-        sql = """INSERT INTO tornado_warnings (starttime, endtime, county, state)
-                    VALUES (%s, %s, %s, %s)"""
-        print_debug('Adding warning to db: %s' % (sql %
-                                                  (starttime, endtime, county, state)))
-        try:
-            cur.execute(sql, (starttime, endtime, county, state))
-        except:
-            print_debug('Tried to add tornado warning, failed: %s' % sys.exc_info()[1])
-            DB_CONN.rollback()
-        DB_CONN.commit()
+    if cur.rowcount > 0:
+        check_row = cur.fetchone()
+        if (check_row[5] == 'watch' and alert_type == 'warning') or \
+                (check_row[5] == 'warning' and alert_type == 'watch'):
+                    print_debug('Deleting old tornado warning, the status has changed')
+                    del_sql = """DELETE FROM tornado_warnings
+                                    WHERE id = %s"""
+                    cur.execute(del_sql, (check_row[0],))
+        else:
+            print_debug('No change needed to NWS tornado alert')
+            return
+    sql = """INSERT INTO tornado_warnings (starttime, endtime, county, state, alert_type)
+                VALUES (%s, %s, %s, %s, %s)"""
+    print_debug('Adding warning to db: %s' % (sql %
+                                              (starttime, endtime, county, state, alert_type)))
+    try:
+        cur.execute(sql, (starttime, endtime, county, state, alert_type))
+    except:
+        print_debug('Tried to add tornado warning, failed: %s' % sys.exc_info()[1])
     return
 
 
@@ -94,6 +110,7 @@ def make_db_conn():
     global DB_CONN
     print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     
 
 def debug_mail(msg, entry):
@@ -120,8 +137,8 @@ def main():
     # serialised right now so it could be worse.
     make_db_conn()
 
-    for affected_county, affected_state, starttime, endtime in get_tornado_warnings(feed):
-        add_warning(affected_county, affected_state, starttime, endtime)
+    for affected_county, affected_state, starttime, endtime, alert_type in get_tornado_warnings(feed):
+        add_warning(affected_county, affected_state, starttime, endtime, alert_type)
 
 
 if __name__ == '__main__':
