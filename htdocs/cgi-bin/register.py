@@ -17,11 +17,12 @@ def main():
     form = cgi.FieldStorage()
     device_id = form.getvalue("deviceid", None)
     registration_id = form.getvalue("registrationid", None)
+    if not registration_id or not device_id:
+        return
+
     # Sanitize data ftw!
     device_id = re.sub('[^A-Za-z0-9_\-]+', '', device_id)
     registration_id = re.sub('[^A-Za-z0-9_\-]+', '', registration_id)
-    if not registration_id:
-        return
 
     make_db_conn()
     cur = DB_CONN.cursor()
