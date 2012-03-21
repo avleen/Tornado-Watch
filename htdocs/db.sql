@@ -13820,7 +13820,8 @@ CREATE TABLE user_submits (
     create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
     priority boolean DEFAULT false NOT NULL,
     registration_id character varying(4096) NOT NULL,
-    location geometry NOT NULL
+    location geometry NOT NULL,
+    weight integer
 );
 
 

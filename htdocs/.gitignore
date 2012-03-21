@@ -2,3 +2,5 @@ register_server_with_c2dm.sh
 AUTH_PASS
 *.pyc
 logs/
+nohup.out
+commit.sh
