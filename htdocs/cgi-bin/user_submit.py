@@ -31,6 +31,14 @@ def check_submit_in_zone(lng, lat):
         return True
 
 
+def cgi_output(msg):
+    """ One place to generate CGI output"""
+
+    print "Content-type: text/plain"
+    print
+    print cgi.escape(msg)
+
+
 def main():
     form = cgi.FieldStorage()
     lng = form.getvalue("lng", None)
@@ -42,8 +50,10 @@ def main():
     lat = re.sub('[^0-9\-]+', '', lat)
     registration_id = re.sub('[^A-Za-z0-9_\-]+', '', registration_id)
     if not lng or not lat:
+        cgi_output("Please upgrade Tornado Alert!")
         return
     if lng < 10000 or lat < 10000:
+        cgi_output("Please upgrade Tornado Alert!")
         return
 
     # lng and lat in postgis are decimal, not microdegrees
@@ -56,10 +66,12 @@ def main():
     in_zone = check_submit_in_zone(lng, lat)
     if in_zone:
         priority = 't'
+        weight = 2
         msg = 'Marker submitted'
     else:
         priority = 'f'
-        msg = 'You are not under a tornado watch!'
+        weight = 1
+        msg = 'Marker submitted'
 
     cur = DB_CONN.cursor()
     # First make sure the user hasn't submitted an alert already in the last 30
@@ -69,16 +81,16 @@ def main():
                     AND create_date > (date_part('epoch', now()) - 1800)"""
     cur.execute(check_sql, (registration_id,))
     if cur.rowcount > 0:
+        cgi_output("Another marker recently submitted")
         return
 
-    sql = """INSERT INTO user_submits (registration_id, location, priority)
-                VALUES (%s, makepoint(%s, %s), %s)"""
-    cur.execute(sql, (registration_id, lng, lat, priority))
+    sql = """INSERT INTO user_submits (registration_id, location, priority, weight)
+                VALUES (%s, makepoint(%s, %s), %s, %s)"""
+    cur.execute(sql, (registration_id, lng, lat, priority, weight))
     DB_CONN.commit()
 
-    print "Content-type: text/plain"
-    print
-    print cgi.escape(msg)
+    cgi_output(msg)
+
 
 
 if __name__ == "__main__":
