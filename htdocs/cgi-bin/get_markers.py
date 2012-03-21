@@ -16,6 +16,14 @@ def make_db_conn():
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
 
 
+def cgi_output(msg):
+    """ One place to generate CGI output"""
+
+    print "Content-type: text/plain"
+    print
+    print cgi.escape(msg)
+
+
 def main():
     make_db_conn()
     dict_cur = DB_CONN.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -41,14 +49,29 @@ def main():
                                 'lng': row['lng'],
                                 'priority': row['priority']})
         check_cur.close()
+    # Get the user's tornado markers, so they don't think they've disappeared
+    # TODO(avleen): Enable this after we enable sending the registration_id on
+    # get_markers.py
+    #registration_id = form.getvalue("registrationid", None)
+    #if not registration_id or not device_id:
+    #    registration_id = 0
+    ## Sanitize data ftw!
+    #registration_id = re.sub('[^A-Za-z0-9_\-]+', '', registration_id)
+    #placebo_sql = """SELECT X(location) AS lng, Y(location) AS lat, priority
+    #                    FROM user_submits
+    #                    WHERE create_date > (%s - (60 * 60 * 24))
+    #                    AND registration_id = %s"""
+    #dict_cur.execute(placebo_sql, (TIME,regisration_id))
+    #if dict_cur.rowcount > 0:
+    #    for row in dict_cur:
+    #       marker_list.append({'lat': row['lat'],
+    #                          'lng': row['lng'],
+    #                          'priority': row['priority']})
     if len(marker_list) == 0:
         marker_list = [{"lat": 0, "lng": 90, "priority": 'f'}]
     jsonout = json.dumps(marker_list)
-    print "markers: %d" % len(marker_list)
 
-    print "Content-type: text/plain"
-    print
-    print cgi.escape(jsonout)
+    cgi_output(jsonout)
 
 
 if __name__ == "__main__":
