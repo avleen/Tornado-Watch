@@ -29,10 +29,12 @@ def alert_runner(i, q):
             print_debug("BACKOFF IN EFFECT: %s seconds" % BACKOFF)
             time.sleep(BACKOFF)
         serial_id, registration_id, alert_type = queue.get()
-        if alert_type == "distance-low" or alert_type == "distance-high":
+        if alert_type.startswith("distance"):
             payload = "Tornado spotted in your area"
-        elif alert_type == "zone":
-            payload = "Your county is under a tornado watch"
+        elif alert_type == ("zone-watch"):
+            payload = "Your county is under a TORNADO WATCH - BE PREPARED"
+        elif alert_type == ("zone-warning"):
+            payload = "Your county is under a tornado warning"
         #else:
         #    print "Unknown alert_type."
         #    return
@@ -55,7 +57,9 @@ def alert_runner(i, q):
                     BACKOFF = 0
                 if response.headers.has_key('Update-Client-Auth'):
                     update_auth_key(response.headers.getheader('Update-Client-Auth'))
-                sql = """UPDATE alert_queue SET alerted = 't'
+                sql = """UPDATE alert_queue
+                            SET alerted = 't',
+                            alert_date = date_part('epoch', now())
                             WHERE id = %s"""
                 cursor = DB_CONN.cursor()
                 cursor.execute(sql, (serial_id,))
