@@ -3,7 +3,7 @@ AUTH_PASS
 *.pyc
 *.swp
 *.swo
-auto_rep.kml
+htdocs/auto_rep.kml
 logs/
 nohup.out
 commit.sh
