@@ -31,9 +31,9 @@ def alert_runner(i, q):
         serial_id, registration_id, alert_type = queue.get()
         if alert_type.startswith("distance"):
             payload = "Tornado spotted in your area"
-        elif alert_type == ("zone-watch"):
+        elif alert_type == ("watch"):
             payload = "Your county is under a TORNADO WATCH - BE PREPARED"
-        elif alert_type == ("zone-warning"):
+        elif alert_type == ("warning"):
             payload = "Your county is under a tornado warning"
         #else:
         #    print "Unknown alert_type."
@@ -71,7 +71,10 @@ def alert_runner(i, q):
                 regid_sql = """SELECT registration_id FROM alert_queue
                                 WHERE id = %s"""
                 cursor.execute(regid_sql, (serial_id,))
-                registration_id = cursor.fetchone()[0]
+                try:
+                    registration_id = cursor.fetchone()[0]
+                except TypeError:
+                    print_debug('Tried to unregister a user, but had no registration_id')
                 cursor.close()
 
                 print_debug("%s is no longer registered" % registration_id)
@@ -79,7 +82,8 @@ def alert_runner(i, q):
                 delete_sql = """DELETE FROM alert_queue
                                     WHERE registration_id = %s"""
                 delete_cursor.execute(delete_sql, (registration_id,))
-                delete_sql = """DELETE FROM user_registration
+                delete_sql = """UPDATE user_registration
+                                    SET active = 'f', update_date = date_part('epoch', now())
                                     WHERE registration_id = %s"""
                 delete_cursor.execute(delete_sql, (registration_id,))
                 delete_cursor.close()
