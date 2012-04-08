@@ -31,6 +31,36 @@ def check_submit_in_zone(lng, lat):
         return True
 
 
+def check_recent_user(registration_id):
+    """Returns True if this is a recently registered user"""
+
+    cur = DB_CONN.cursor()
+
+    # First get the device_id, if it registered in the last 30 minutes.
+    sql = """SELECT device_id FROM user_registration
+                WHERE registration_id = %s
+                AND create_date < (date_part('epoch', now()) - (60 * 30))"""
+    cur.execute(sql, (registration_id,))
+
+    # If it didn't register in the last 30 minutes, we can return False
+    if cur.rowcount == 0:
+        return False
+
+    # If we get here, it DID register in the last 30 minutes. But this might
+    # have been a re-registration, so check if the device_id has been seen
+    # before but more than 30 minutes ago. If so, it's old and return False,
+    # otherwise return True.
+    row = cur.fetchone()
+    sql = """SELECT registration_id FROM user_registration
+                WHERE device_id = %s
+                AND create_date > (date_part('epoch', now()) - (60 * 30))"""
+    cur.execute(sql, (row[0],))
+    if cur_rowcount > 0:
+        return False
+    else:
+        return True
+
+
 def cgi_output(msg):
     """ One place to generate CGI output"""
 
@@ -61,6 +91,13 @@ def main():
     lat = float(lat) / 1000000
 
     make_db_conn()
+
+    # Make sure this is a user who didn't register in the last 30 minutes. If
+    # they did, ignore the submittion - high probability it was just a test.
+    recent_user = check_recent_user(registration_id)
+    if recent_user:
+        cgi_output("Marker submitted")
+        return
 
     # Make sure we're in a tornado alert zone
     in_zone = check_submit_in_zone(lng, lat)
