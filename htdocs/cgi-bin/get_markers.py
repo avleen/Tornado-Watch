@@ -68,7 +68,7 @@ def main():
     #                          'lng': row['lng'],
     #                          'priority': row['priority']})
     if len(marker_list) == 0:
-        marker_list = [{"lat": 0, "lng": 90, "priority": 'f'}]
+        marker_list = [{"lat": 0, "lng": 0, "priority": 'f'}]
     jsonout = json.dumps(marker_list)
 
     cgi_output(jsonout)
