@@ -2,7 +2,7 @@
 
 srcdir=/www/silverwraith.com/canonical/tw.silverwraith.com/
 dstdir=/home/avleen/devel/Tornado-Watch/htdocs
-rsync -av ${srcdir} ${dstdir}
+rsync -av --exclude logs/ ${srcdir} ${dstdir}
 pg_dump -s -U postgres tornadowatch > ${dstdir}/db.sql
 cd ${dstdir}
 #git add -A .
