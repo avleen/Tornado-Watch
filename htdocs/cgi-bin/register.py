@@ -13,11 +13,20 @@ def make_db_conn():
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
 
 
+def cgi_output(msg):
+    """One place to do CGI output"""
+
+    print "Content-type: text/plain"
+    print
+    print cgi.escape(msg)
+
+
 def main():
     form = cgi.FieldStorage()
     device_id = form.getvalue("deviceid", None)
     registration_id = form.getvalue("registrationid", None)
     if not registration_id or not device_id:
+        cgi_output("No registration ID given")
         return
 
     # Sanitize data ftw!
@@ -36,9 +45,7 @@ def main():
         cur.execute(add_sql, (device_id, registration_id))
         DB_CONN.commit()
 
-    print "Content-type: text/plain"
-    print
-    print cgi.escape("Registration successful")
+    cgi_output("Registration successful")
 
 
 if __name__ == "__main__":
