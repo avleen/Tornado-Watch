@@ -29,7 +29,8 @@ echo '</Document>' >> ${kmlfile}
 echo '</kml>' >> ${kmlfile}
 
 #gzip -v9c ${kmlfile} > ${kmlfilez}
+zip -9 ${kmlfilez} ${kmlfile}
 echo 'Content-type: text/html'
-echo 'Location: http://maps.google.com/maps?q=http:%2F%2Ftw.silverwraith.com%2Fauto_rep.kml'
+echo 'Location: http://maps.google.com/maps?q=http:%2F%2Ftw.silverwraith.com%2Fauto_rep.kmz'
 echo
 echo

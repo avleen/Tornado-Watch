@@ -2,6 +2,7 @@
 
 mydir=$( dirname $0 )
 kmlfile=${mydir}/../htdocs/auto_rep_circle.kml
+kmlfilez=${mydir}/../htdocs/auto_rep_circle.kmz
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' > ${kmlfile}
 echo '<kml xmlns="http://www.opengis.net/kml/2.2">' >> ${kmlfile}
@@ -13,7 +14,9 @@ echo "SELECT '<Placemark>' || ST_AsKML(ST_Buffer(ST_GeographyFromText(location),
 echo '</Folder>' >> ${kmlfile}
 echo '</kml>' >> ${kmlfile}
 
+zip -9 ${kmlfilez} ${kmlfile}
+
 echo 'Content-type: text/html'
-echo 'Location: http://maps.google.com/maps?q=http:%2F%2Ftw.silverwraith.com%2Fauto_rep_circle.kml'
+echo 'Location: http://maps.google.com/maps?q=http:%2F%2Ftw.silverwraith.com%2Fauto_rep_circle.kmz'
 echo
 echo
