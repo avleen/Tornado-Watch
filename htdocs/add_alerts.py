@@ -71,13 +71,14 @@ def main():
                     WHERE ST_Intersects(r.location, c.the_geom)
                     AND c.county ~* t.county
                     AND t.starttime < %s
-                    AND t.endtime > %s"""
+                    AND t.endtime > %s
+                    AND r.active = 't'"""
         print_debug('Getting the list of users in tornado zones')
         main_cur.execute(sql, (time_now, time_now))
         print_debug('%s users found in tornado zones' % main_cur.rowcount)
 
         # See if there is an alert on the queue for each user in the zone
-        # After that, see if they're within 10mi of a user submitted alert
+        # After that, see if they're within 20mi of a user submitted alert
         print_debug('Iterating through found users')
         for record in main_cur:
             registration_id = record[0]
@@ -85,7 +86,7 @@ def main():
             nws_alert_type = record[2]
             check_cur = DB_CONN.cursor()
 
-            print_debug('Checking if user %s has pending zone alerts' % registration_id)
+            print_debug('Checking if user %s has been alerted about this zone' % registration_id)
             check_sql = """SELECT id FROM alert_queue
                             WHERE registration_id = %s
                             AND reference_id = %s
@@ -104,7 +105,8 @@ def main():
                             INNER JOIN user_registration r ON ST_DWithin(r.location, s.location, 32186, false)
                             WHERE s.create_date > %s
                             AND r.registration_id = %s
-                            AND s.registration_id != %s"""
+                            AND s.registration_id != %s
+                            AND r.active='t'"""
             #print_debug(check_sql % (time_now - 3600, registration_id, registration_id))
             check_cur.execute(check_sql, (time_now - 3600, registration_id, registration_id))
             # If we didn't find a match against user_submit, continue
