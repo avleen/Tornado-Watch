@@ -13795,7 +13795,8 @@ CREATE TABLE user_registration (
     registration_id character varying(4096) NOT NULL,
     location geometry,
     create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
-    update_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL
+    update_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
+    active boolean DEFAULT true NOT NULL
 );
 
 
