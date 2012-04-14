@@ -3,15 +3,17 @@
 import sys
 sys.path.insert(0, '/www/silverwraith.com/canonical/tw.silverwraith.com')
 
+import memcache
 import psycopg2
 import time
 import pidlock
 
 DB_CONN = None
+MC_CONN = None
 DEBUG = False
 LOW_WEIGHT = 1
 HIGH_WEIGHT = 2
-REQUIRED_WEIGHT = 4
+REQUIRED_WEIGHT = 8
 
 def add_alert(registration_id, reference_id, alert_type):
     """Add an alert to the alert_queue to warn a user"""
@@ -40,9 +42,11 @@ def make_db_conn():
     """Establish a database connection"""
 
     global DB_CONN
+    global MC_CONN
     print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
     DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 
 
 def print_debug(msg):
@@ -63,24 +67,28 @@ def main():
     # The rest of this is basically a big loop with a sleep
     while True:
         time_now = time.mktime(time.localtime())
-        time.sleep(5)
+        time.sleep(10)
         main_cur = DB_CONN.cursor()
         # Get a list of users in current tornado alert zones
-        sql = """SELECT r.registration_id, t.id, t.alert_type
-                    FROM user_registration r, counties c, tornado_warnings t
-                    WHERE ST_Intersects(r.location, c.the_geom)
-                    AND c.county ~* t.county
-                    AND t.starttime < %s
-                    AND t.endtime > %s
-                    AND r.active = 't'"""
-        print_debug('Getting the list of users in tornado zones')
-        main_cur.execute(sql, (time_now, time_now))
-        print_debug('%s users found in tornado zones' % main_cur.rowcount)
+        users_in_zone = MC.get("users_in_zone")
+        if not users_in_zone:
+            sql = """SELECT r.registration_id, t.id, t.alert_type
+                     FROM user_registration r, counties c, tornado_warnings t
+                     WHERE ST_Intersects(r.location, c.the_geom)
+                     AND c.county = t.county
+                     AND t.starttime < %s
+                     AND t.endtime > %s
+                     AND r.active = 't'"""
+            print_debug('Getting the list of users in tornado zones')
+            main_cur.execute(sql, (time_now, time_now))
+            print_debug('%s users found in tornado zones' % main_cur.rowcount)
+            users_in_zone = main_cur.fetchall()
+            MC.set("users_in_zone", users_in_zone, time=60)
 
         # See if there is an alert on the queue for each user in the zone
         # After that, see if they're within 20mi of a user submitted alert
         print_debug('Iterating through found users')
-        for record in main_cur:
+        for record in users_in_zone:
             registration_id = record[0]
             reference_id = record[1]
             nws_alert_type = record[2]

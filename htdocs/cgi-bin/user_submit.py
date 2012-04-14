@@ -55,7 +55,7 @@ def check_recent_user(registration_id):
                 WHERE device_id = %s
                 AND create_date > (date_part('epoch', now()) - (60 * 30))"""
     cur.execute(sql, (row[0],))
-    if cur_rowcount > 0:
+    if cur.rowcount > 0:
         return False
     else:
         return True

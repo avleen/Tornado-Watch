@@ -2,6 +2,7 @@
 
 import cgi
 import json
+import memcache
 import psycopg2
 import psycopg2.extras
 import time
@@ -27,6 +28,13 @@ def cgi_output(msg):
 def main():
     make_db_conn()
     dict_cur = DB_CONN.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+    
+    # Try to get the data from memcache, if it fails, continue as normal.
+    marker_list = mc.get("marker_list")
+    if marker_list:
+        cgi_output(marker_list)
+        return
     marker_list = []
 
     all_markers_sql = """SELECT id, location, X(location) AS lng, Y(location) AS lat, priority
@@ -70,6 +78,7 @@ def main():
     if len(marker_list) == 0:
         marker_list = [{"lat": 0, "lng": 0, "priority": 'f'}]
     jsonout = json.dumps(marker_list)
+    mc.set("marker_list", jsonout, time=30)
 
     cgi_output(jsonout)
 

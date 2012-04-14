@@ -13787,6 +13787,22 @@ ALTER SEQUENCE tornado_warnings_id_seq OWNED BY tornado_warnings.id;
 
 
 --
+-- Name: tornado_warnings_test; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tornado_warnings_test (
+    id integer,
+    starttime integer,
+    endtime integer,
+    county character varying(255),
+    state character(2),
+    alert_type character varying(8)
+);
+
+
+ALTER TABLE public.tornado_warnings_test OWNER TO postgres;
+
+--
 -- Name: user_registration; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -13912,10 +13928,24 @@ ALTER TABLE ONLY spatial_ref_sys
 
 
 --
+-- Name: active_registration_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX active_registration_id_idx ON user_registration USING btree (active, registration_id) WHERE (active = true);
+
+
+--
 -- Name: alert_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE INDEX alert_date_idx ON alert_queue USING btree (alert_date);
+
+
+--
+-- Name: alerted_false_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX alerted_false_idx ON alert_queue USING btree (alerted) WHERE (alerted = false);
 
 
 --
@@ -13947,6 +13977,27 @@ CREATE UNIQUE INDEX endtime_count_state_idx ON tornado_warnings USING btree (end
 
 
 --
+-- Name: registration_id_reference_id_alert_type_idc; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX registration_id_reference_id_alert_type_idc ON alert_queue USING btree (registration_id, reference_id, alert_type);
+
+
+--
+-- Name: starttime_endtime_county_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX starttime_endtime_county_idx ON tornado_warnings USING btree (starttime, endtime, county);
+
+
+--
+-- Name: tornado_warning_county_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX tornado_warning_county_idx ON tornado_warnings USING btree (county);
+
+
+--
 -- Name: user_registration_create_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -13972,6 +14023,13 @@ CREATE INDEX user_submits_create_date_idx ON user_submits USING btree (create_da
 --
 
 CREATE INDEX user_submits_location_idx ON user_submits USING gist (location);
+
+
+--
+-- Name: user_submits_registration_id_create_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX user_submits_registration_id_create_date_idx ON user_submits USING btree (registration_id, create_date);
 
 
 --

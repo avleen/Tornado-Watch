@@ -104,6 +104,23 @@ def add_warning(county, state, starttime, endtime, alert_type):
     return
 
 
+def get_true_county_name(affected_county, affected_state):
+    """Find the full county name from the DB"""
+
+    cur = DB_CONN.cursor()
+    sql = """SELECT DISTINCT county
+                FROM counties
+                WHERE county ~* %s
+                AND state = %s
+                LIMIT 1"""
+    cur.execute(sql, (affected_county, affected_state))
+    if cur.rowcount == 0:
+        return '%s County' % affected_county
+    else:
+        row = cur.fetchone()
+        return '%s' % row[0]
+
+
 def make_db_conn():
     """Establish a database connection"""
 
@@ -138,7 +155,13 @@ def main():
     make_db_conn()
 
     for affected_county, affected_state, starttime, endtime, alert_type in get_tornado_warnings(feed):
-        add_warning(affected_county, affected_state, starttime, endtime, alert_type)
+        # A "county" name here is missing its suffix. The suffix can be
+        # "County", or "Parish" or a few other things. We need to first find out
+        # what it is, and then save that. Doing so lets us do an exact join
+        # between two tables instead of having to do a slow, expensive regex
+        # match.
+        true_county_name = get_true_county_name(affected_county, affected_state)
+        add_warning(true_county_name, affected_state, starttime, endtime, alert_type)
 
 
 if __name__ == '__main__':
