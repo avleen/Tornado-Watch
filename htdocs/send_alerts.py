@@ -70,6 +70,7 @@ def alert_runner(i, q):
                 cursor = DB_CONN.cursor()
                 regid_sql = """SELECT registration_id FROM alert_queue
                                 WHERE id = %s"""
+                print_debug(cursor.mogrify(regid_sql, (serial_id,)))
                 cursor.execute(regid_sql, (serial_id,))
                 try:
                     registration_id = cursor.fetchone()[0]

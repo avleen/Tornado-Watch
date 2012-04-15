@@ -5,6 +5,7 @@ import psycopg2
 import re
 
 DB_CONN = None
+STAT_FILE = "/tmp/user_submits.tmp"
 
 def make_db_conn():
     """Establish a database connection"""
@@ -127,7 +128,7 @@ def main():
     DB_CONN.commit()
 
     cgi_output(msg)
-
+    open(STAT_FILE, 'w')
 
 
 if __name__ == "__main__":

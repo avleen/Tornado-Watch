@@ -12,6 +12,7 @@ import pidlock
 
 DB_CONN = None
 DEBUG = False
+STAT_FILE = "/tmp/pull_weatherfeed.tmp"
 
 def get_feed():
     """Fetch the RSS feed from NWS"""
@@ -172,3 +173,4 @@ if __name__ == '__main__':
     pidlocking.start()
     main()
     pidlocking.stop()
+    open(STAT_FILE, 'w')

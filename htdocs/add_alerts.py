@@ -4,9 +4,10 @@ import sys
 sys.path.insert(0, '/www/silverwraith.com/canonical/tw.silverwraith.com')
 
 import memcache
+import os
+import pidlock
 import psycopg2
 import time
-import pidlock
 
 DB_CONN = None
 MC_CONN = None
@@ -14,6 +15,7 @@ DEBUG = False
 LOW_WEIGHT = 1
 HIGH_WEIGHT = 2
 REQUIRED_WEIGHT = 8
+REQUIRED_KARMA = 1
 
 def add_alert(registration_id, reference_id, alert_type):
     """Add an alert to the alert_queue to warn a user"""
@@ -46,7 +48,7 @@ def make_db_conn():
     print_debug('Setting up DB connection')
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
     DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-    mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+    MC_CONN = memcache.Client(['127.0.0.1:11211'], debug=0)
 
 
 def print_debug(msg):
@@ -63,14 +65,23 @@ def main():
 
     # Some initial setup
     make_db_conn()
+    stat_files = {"/tmp/pull_weatherfeed.tmp": 0,
+                  "/tmp/user_submits.tmp": 0}
 
     # The rest of this is basically a big loop with a sleep
     while True:
+        while True:
+            for filename, age in stat_files.items():
+                file_age = os.stat(filename).st_mtime
+                if file_age > age:
+                    print_debug("Update happened to %s" % filename)
+                    stat_files[filename] = file_age
+                    break
+            time.sleep(10)
         time_now = time.mktime(time.localtime())
-        time.sleep(10)
         main_cur = DB_CONN.cursor()
         # Get a list of users in current tornado alert zones
-        users_in_zone = MC.get("users_in_zone")
+        users_in_zone = MC_CONN.get("users_in_zone")
         if not users_in_zone:
             sql = """SELECT r.registration_id, t.id, t.alert_type
                      FROM user_registration r, counties c, tornado_warnings t
@@ -83,7 +94,7 @@ def main():
             main_cur.execute(sql, (time_now, time_now))
             print_debug('%s users found in tornado zones' % main_cur.rowcount)
             users_in_zone = main_cur.fetchall()
-            MC.set("users_in_zone", users_in_zone, time=60)
+            MC_CONN.set("users_in_zone", users_in_zone, time=60)
 
         # See if there is an alert on the queue for each user in the zone
         # After that, see if they're within 20mi of a user submitted alert
@@ -107,8 +118,8 @@ def main():
             # Check if a user's last known location (r.location) is within 20mi of a
             # reported tornado (s.location) which was reported in the last 60
             # minutes.
-            print_debug('Checking if user %s is near TWO user submission' % registration_id)
-            check_sql = """SELECT s.registration_id AS s_id, s.priority, s.id, s.weight
+            print_debug('Checking if user %s is near enough user submission' % registration_id)
+            check_sql = """SELECT s.registration_id AS s_id, s.priority, s.id, s.weight, r.karma
                             FROM user_submits s
                             INNER JOIN user_registration r ON ST_DWithin(r.location, s.location, 32186, false)
                             WHERE s.create_date > %s
@@ -126,14 +137,16 @@ def main():
             # If we got a result back, see if there has been an alert in the last 30
             # minutes. If so, don't alert again. Otherwise, warn them!
             weight_count = 0
+            karma_count = 0
             for check_row in check_cur:
                 print_debug('They are near: %s, %s, %s, %s' % (check_row[0], check_row[1], check_row[2], check_row[3]))
                 weight_count = weight_count + check_row[3]
-            if weight_count < 4:
-                print_debug('Weight too low to alert: %s' % weight_count)
+                karma_count = karma_count + check_row[4]
+            if weight_count < REQUIRED_WEIGHT or karma_count < REQUIRED_KARMA:
+                print_debug('Weight/Karma too low to alert: %s/%s' % (weight_count, karma_count))
                 continue
             else:
-                print_debug('High weight found: %s. Preparing to alert.' % weight_count)
+                print_debug('High weight/karma found: %s/%s. Preparing to alert.' % (weight_count, karma_count))
 
             # Grab the most recent user_submit_id and distance_type to record in
             # the alert_queue table

@@ -19,10 +19,10 @@ echo '      </PolyStyle>' >> ${kmlfile}
 echo '    </Style>' >> ${kmlfile}
 echo '<Folder>' >> ${kmlfile}
 echo '<styleUrl>#yellowLineGreenPoly</styleUrl>' >> ${kmlfile}
-echo "DELETE FROM tmploc" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
-echo "INSERT INTO tmploc SELECT location FROM user_registration order by create_date" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
+#echo "DELETE FROM tmploc" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
+#echo "INSERT INTO tmploc SELECT location FROM user_registration order by create_date desc limit 500" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
 #echo "SELECT '<Placemark>' || ST_AsKML(location) || '</Placemark>' FROM tmploc" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
-echo "SELECT '<Placemark><Point><coordinates>' || X(location) || ',' || Y(location) || '</coordinates></Point><name>' || c.county || ', ' || c.state || '</name><description>' || c.county || ', ' || c.state || '</description></Placemark>' FROM user_registration u, counties c where ST_Intersects(u.location, c.the_geom) ORDER BY u.create_date" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
+echo "SELECT '<Placemark><Point><coordinates>' || X(location) || ',' || Y(location) || '</coordinates></Point><name>' || c.county || ', ' || c.state || '</name><description>' || date_trunc('day', to_timestamp(u.create_date))::date  || '</description></Placemark>' FROM user_registration u, counties c where ST_Intersects(u.location, c.the_geom) ORDER BY u.create_date desc" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
 echo "SELECT '<Placemark>' || ST_AsKML(ST_GeographyFromText(the_geom)) || '<name>' || c.county || ', ' || c.state || '</name><description>' || c.county || ', ' || c.state || '</description></Placemark>' FROM tornado_warnings t, counties c where t.endtime > date_part('epoch', now()) and c.county ~* t.county and c.state = t.state" | psql -qtU postgres -d tornadowatch >> ${kmlfile}
 echo '</Folder>' >> ${kmlfile}
 echo '</Document>' >> ${kmlfile}

@@ -13812,7 +13812,8 @@ CREATE TABLE user_registration (
     location geometry,
     create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
     update_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
-    active boolean DEFAULT true NOT NULL
+    active boolean DEFAULT true NOT NULL,
+    karma integer DEFAULT 0 NOT NULL
 );
 
 
