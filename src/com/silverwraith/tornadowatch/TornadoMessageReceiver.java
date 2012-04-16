@@ -41,7 +41,7 @@ public class TornadoMessageReceiver extends BroadcastReceiver {
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification notification = new Notification(R.drawable.logo,
-				"New tornados reported in your area", System.currentTimeMillis());
+				payload, System.currentTimeMillis());
 		// Hide the notification after its selected
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		if (high_priority_play_sound == true) {
@@ -57,7 +57,7 @@ public class TornadoMessageReceiver extends BroadcastReceiver {
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				intent, 0);
 			notification.setLatestEventInfo(context, "Tornado Watch",
-				"New tornado in your area!", pendingIntent);
+				payload, pendingIntent);
 			notificationManager.notify(0, notification);
 		}
 	}

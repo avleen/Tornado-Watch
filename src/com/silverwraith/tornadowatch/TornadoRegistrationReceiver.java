@@ -42,7 +42,10 @@ public class TornadoRegistrationReceiver extends BroadcastReceiver {
 		Log.w("C2DM", "Registration Receiver Called");
 		if ("com.google.android.c2dm.intent.REGISTRATION".equals(action)) {
 			Log.w("C2DM", "Received registration ID");
-			final String registrationId = intent.getStringExtra("registration_id");
+			String registrationId = intent.getStringExtra("registration_id");
+			if (registrationId == null) {
+				registrationId = "nokey";
+			}
 			String error = intent.getStringExtra("error");
 			
 			Log.d("C2DM", "dmControl: regisrationId = " + registrationId + ", error = " + error);
