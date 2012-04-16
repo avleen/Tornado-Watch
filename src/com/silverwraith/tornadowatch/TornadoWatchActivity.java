@@ -86,9 +86,8 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		}
     	
     	// Do our registration dance first
-    	class RegisterApp extends AsyncTask<String, Void, String> {
-    		@Override
-			protected String doInBackground(String... params) {
+    	class RegisterApp extends AsyncTask<Void, Void, Void> {
+    		protected Void doInBackground(Void... arg0) {
     			Log.w("C2DM", "start registration process");
     			Intent intent = new Intent("com.google.android.c2dm.intent.REGISTER");
     			intent.putExtra("app", PendingIntent.getBroadcast(TornadoWatchActivity.this, 0, new Intent(), 0));
@@ -97,11 +96,11 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(TornadoWatchActivity.this);
     			String registrationId = prefs.getString(AUTH, "nokey");
     			Log.d("Tornado Debug", registrationId);
-				return registrationId;
+				return null;
     		}
     	}
     	RegisterApp do_registration = new RegisterApp();
-    	do_registration.execute("");
+    	do_registration.execute();
     	
     	// Start the LocationListener service
     	Log.i(TAG, "Starting location tracker service");
@@ -110,7 +109,13 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	mapView = (MapView) findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(false);
-        getAndDrawMarkers("onCreate");
+        myLocationOverlay = new TornadoLocationOverlay(TornadoWatchActivity.this, mapView);
+        
+        // Let the user know that we're updating the tornado markers
+        Toast.makeText(TornadoWatchActivity.this, "Updating tornado reports...", Toast.LENGTH_SHORT).show();
+        GetAndDrawMarkers do_get_draw_markers = new GetAndDrawMarkers();
+        do_get_draw_markers.execute("onCreate");
+        do_get_draw_markers = null;
     }
     
     public boolean isDebugBuild() throws Exception {
@@ -118,80 +123,76 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
        PackageInfo pi = pm.getPackageInfo(this.getPackageName(), 0);
        return ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
     }
-    
-    public void getAndDrawMarkers(String markerCaller) {
-        
-        /* A test marker, sits over Mexico City. Mmmm burrito.
-        * mapOverlays = mapView.getOverlays();
-        * drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-        * itemizedOverlay = new TornadoItemizedOverlay(drawable);
-        *
-        * GeoPoint point = new GeoPoint(19240000,-99120000);
-        * OverlayItem overlayitem = new OverlayItem(point, "", "");
-        * itemizedOverlay.addOverlay(overlayitem);
-        * mapOverlays.add(itemizedOverlay);
-        */
-        
-        /* Download markers. This should take just a moment, and gives the
-         * location time to update too.
-         */
-        
-        try {
-        	Log.i(TAG, "About to download markers");
-			JSONArray json = downloadMarkers();
-			mapOverlays = mapView.getOverlays();
-			drawableLow = this.getResources().getDrawable(R.drawable.locationplace);
-			drawableHigh = this.getResources().getDrawable(R.drawable.locationplacered);
-			itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
-			itemizedOverlayHigh = new TornadoItemizedOverlay(drawableHigh);
-			Log.i(TAG, "Number of markers found: " + json.length());
-			// Save the old overlays so we can compare them later
-			List<Overlay> oldOverlays = mapView.getOverlays();
-			if (json.length() > 0) {
-				if (!mapOverlays.isEmpty()) {
-					mapOverlays.clear();
+
+	class GetAndDrawMarkers extends AsyncTask<String, Void, String> {
+		String msg;
+		@Override
+		protected String doInBackground(String... params) {
+			// Download markers in the background		       
+			try {
+		       	Log.i(TAG, "About to download markers");
+				JSONArray json = downloadMarkers();
+				mapOverlays = mapView.getOverlays();
+				drawableLow = TornadoWatchActivity.this.getResources().getDrawable(R.drawable.locationplace);
+				drawableHigh = TornadoWatchActivity.this.getResources().getDrawable(R.drawable.locationplacered);
+				itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
+				itemizedOverlayHigh = new TornadoItemizedOverlay(drawableHigh);
+				Log.i(TAG, "Number of markers found: " + json.length());
+				// Save the old overlays so we can compare them later
+				List<Overlay> oldOverlays = mapView.getOverlays();
+				if (json.length() > 0) {
+					if (!mapOverlays.isEmpty()) {
+						mapOverlays.clear();
+					}
+					for (int i=0; i < json.length(); i++) {
+						JSONObject json_data = json.getJSONObject(i);
+						float markerLat = Float.valueOf(json_data.getString("lat")) * 1000000;
+						float markerLng = Float.valueOf(json_data.getString("lng")) * 1000000;
+						String markerPri = json_data.getString("priority");
+						Log.i(TAG, "Marker: " + markerLat + "," + markerLng + "," + markerPri );
+		            	GeoPoint point = new GeoPoint((int)markerLat, (int)markerLng);
+		            	if (json_data.getString("priority") == "true") {
+		            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
+		            		mapOverlays.add(itemizedOverlayHigh);
+		            	} else {
+		            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
+		            		mapOverlays.add(itemizedOverlayLow);
+		            	}
+					}
 				}
-				for (int i=0; i < json.length(); i++) {
-					JSONObject json_data = json.getJSONObject(i);
-					float markerLat = Float.valueOf(json_data.getString("lat")) * 1000000;
-					float markerLng = Float.valueOf(json_data.getString("lng")) * 1000000;
-					String markerPri = json_data.getString("priority");
-					Log.i(TAG, "Marker: " + markerLat + "," + markerLng + "," + markerPri );
-	            	GeoPoint point = new GeoPoint((int)markerLat, (int)markerLng);
-	            	if (json_data.getString("priority") == "true") {
-	            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
-	            		mapOverlays.add(itemizedOverlayHigh);
-	            	} else {
-	            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
-	            		mapOverlays.add(itemizedOverlayLow);
-	            	}
+				if (params[0] == "onCreate") {
+			        msg = "Updating tornado reports... done!";
+				} else if (mapOverlays != oldOverlays) {
+					Log.i(TAG, "New markers found!");
+					mapView.postInvalidate();
+					//createNotification(TornadoWatchActivity.this, "");
+					msg = "Tornado report markers updated";
+				} else {
+					msg = "No change in tornado reports";
 				}
+			} catch (MalformedURLException e) {
+				// Toast.makeText(TornadoWatchActivity.this, "Marker URL is malformed", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// Toast.makeText(TornadoWatchActivity.this, "Unable to decode markers", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			} catch (IOException e) {
+				// Toast.makeText(TornadoWatchActivity.this, "Marker download failed", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
 			}
-			if (mapOverlays != oldOverlays) {
-				Log.i(TAG, "New markers found!");
-				mapView.postInvalidate();
-				//createNotification(TornadoWatchActivity.this, "");
-			} else if (mapOverlays == oldOverlays && markerCaller == "UserRefresh") {
-				Toast.makeText(TornadoWatchActivity.this, "No change in tornado reports", Toast.LENGTH_SHORT).show();
-			}
-		} catch (MalformedURLException e) {
-			// Toast.makeText(TornadoWatchActivity.this, "Marker URL is malformed", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// Toast.makeText(TornadoWatchActivity.this, "Unable to decode markers", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		} catch (IOException e) {
-			// Toast.makeText(TornadoWatchActivity.this, "Marker download failed", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
+
+			/* Add an overlay for the current location marker.
+		     * Once we have it, refresh immediately and zoom to our location.
+		     */
+	        mapView.getOverlays().add(myLocationOverlay);
+	        mapView.postInvalidate();
+	        return msg;
 		}
-        
-        /* Add an overlay for the current location marker.
-         * Once we have it, refresh immediately and zoom to our location.
-         */
-        myLocationOverlay = new TornadoLocationOverlay(this, mapView);
-        mapView.getOverlays().add(myLocationOverlay);
-        mapView.postInvalidate();
-    }
+		
+		protected void onPostExecute(String msg) {
+			Toast.makeText(TornadoWatchActivity.this, msg, Toast.LENGTH_SHORT).show();
+		}
+	}
     
     @Override
     protected boolean isRouteDisplayed() {
@@ -202,38 +203,42 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	super.onResume();
     	final String deviceId = Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
     	// On start or resume, register for location updates!
-    	myLocationOverlay.enableCompass();
+    	// myLocationOverlay.enableCompass();
     	myLocationOverlay.enableMyLocation();
-    	myLocationOverlay.runOnFirstFix(new Runnable() {
-            public void run() {
-                mapView.getController().animateTo(myLocationOverlay.getMyLocation());
-                Log.i(TAG, myLocationOverlay.getMyLocation().toString());
-                int myLng = myLocationOverlay.getMyLocation().getLongitudeE6();
-                int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
-        		HttpClient client = new DefaultHttpClient();
-        		HttpPost post = new HttpPost(CGI_BASE + "/updatelocation.py");
-        		// Get the current registrationId. This might be "nokey"!
-        		registrationId = showRegistrationId();
-        		if (registrationId != null) {        		
-        			try {
-        				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-        				nameValuePairs.add(new BasicNameValuePair("lng", String.valueOf(myLng)));
-        				nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
-        				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
-        				nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
-        				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        				HttpResponse response = client.execute(post);
-        				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        				String line = "";
-        				while ((line = rd.readLine()) != null) {
-        					Log.e("HttpResponse", line);
-        				}
-        			} catch (IOException e) {
-        				e.printStackTrace();
-        			}
-        		}
-            }
-        });
+    	// On some phones, runOnFirstFix() runs before there's a location fix. so getMyLocation() returns NULL.
+    	// Catch this.
+    	if (myLocationOverlay.getMyLocation() != null) {
+    		myLocationOverlay.runOnFirstFix(new Runnable() {
+    			public void run() {
+    				mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+    				Log.i(TAG, myLocationOverlay.getMyLocation().toString());
+    				int myLng = myLocationOverlay.getMyLocation().getLongitudeE6();
+    				int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
+    				HttpClient client = new DefaultHttpClient();
+    				HttpPost post = new HttpPost(CGI_BASE + "/updatelocation.py");
+    				// Get the current registrationId. This might be "nokey"!
+    				registrationId = showRegistrationId();
+    				if (registrationId != null) {        		
+    					try {
+    						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+    						nameValuePairs.add(new BasicNameValuePair("lng", String.valueOf(myLng)));
+    						nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
+    						nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
+    						nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
+    						post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+    						HttpResponse response = client.execute(post);
+    						BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+    						String line = "";
+    						while ((line = rd.readLine()) != null) {
+    							Log.e("HttpResponse", line);
+    						}
+    					} catch (IOException e) {
+    						e.printStackTrace();
+    					}
+    				}
+    			}
+        	});
+    	}
     }
 
 	protected void onPause() {
@@ -314,7 +319,10 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 	        case R.id.preferences:
 	        	startActivity(new Intent("com.silverwraith.tornadowatch.TornadoPreferenceActivity"));
 	        case R.id.get_markers:
-	        	getAndDrawMarkers("UserRefresh");
+	        	// getAndDrawMarkers("UserRefresh");
+	        	GetAndDrawMarkers do_get_draw_markers = new GetAndDrawMarkers();
+	            do_get_draw_markers.execute("onRequest");
+	            do_get_draw_markers = null;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -337,15 +345,18 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		drawableLow = this.getResources().getDrawable(R.drawable.locationplace);
 		itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
         GeoPoint point = myLocationOverlay.getMyLocation();
-        itemizedOverlayLow.addOverlay(new OverlayItem(point, "", ""));
-        mapOverlays.add(itemizedOverlayLow);
-        mapView.postInvalidate();
-        
-        try {
-			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6());
-		} catch (MalformedURLException e) {
-			Toast.makeText(this, "Malformed URL", Toast.LENGTH_SHORT).show();
-		}
+        if (point != null) {
+        	itemizedOverlayLow.addOverlay(new OverlayItem(point, "", ""));
+        	mapOverlays.add(itemizedOverlayLow);
+        	mapView.postInvalidate();
+            try {
+    			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6());
+    		} catch (MalformedURLException e) {
+    			Toast.makeText(this, "Malformed URL", Toast.LENGTH_SHORT).show();
+    		}
+        } else {
+        	Toast.makeText(this, "Waiting for GPS location...", Toast.LENGTH_SHORT).show();
+        }
 	}
 	
 	public void submitCoordinates(int lng, int lat) throws MalformedURLException {

@@ -38,8 +38,8 @@ public class TornadoRegistrationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		String action = intent.getAction();
 		Log.w("C2DM", "Registration Receiver Called");
+		String action = intent.getAction();
 		if ("com.google.android.c2dm.intent.REGISTRATION".equals(action)) {
 			Log.w("C2DM", "Received registration ID");
 			String registrationId = intent.getStringExtra("registration_id");
