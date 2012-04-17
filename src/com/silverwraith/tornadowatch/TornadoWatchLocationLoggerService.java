@@ -3,6 +3,8 @@ package com.silverwraith.tornadowatch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -70,29 +73,44 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 
 	public void onLocationChanged(Location loc) {
 	   Log.d(TAG, "onLocationChanged with Location: " + loc.toString());
-	   HttpClient client = new DefaultHttpClient();
-	   HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
 	   // Get the current registrationId. This might be "nokey"!
 	   registrationId = showRegistrationId();
-	   double myLong = loc.getLongitude();
+	   double myLng = loc.getLongitude();
 	   double myLat = loc.getLatitude();
 	   if (registrationId != null) {        		
-		  try {
-			  List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-			  nameValuePairs.add(new BasicNameValuePair("long", String.valueOf(myLong)));
-			  nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
-			  nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
-			  post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			  HttpResponse response = client.execute(post);
-			  BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			  String line = "";
-			  while ((line = rd.readLine()) != null) {
-				  Log.e("HttpResponse", line);
-			  }
-		  } catch (IOException e) {
-			  e.printStackTrace();
-		  }
+		   AsyncSubmitLocationChange do_submit_location_change = new AsyncSubmitLocationChange();
+		   do_submit_location_change.execute(String.valueOf(myLng), String.valueOf(myLat), registrationId);
 	   }
+	}
+	
+	class AsyncSubmitLocationChange extends AsyncTask<String, Void, Void> {
+		URL url;
+		protected Void doInBackground(String... param) {
+			try {
+				url = new URL("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			try {
+				HttpClient client = new DefaultHttpClient();
+				HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
+
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+				nameValuePairs.add(new BasicNameValuePair("long", param[0]));
+				nameValuePairs.add(new BasicNameValuePair("lat", param[1]));
+				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				HttpResponse response = client.execute(post);
+				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				String line = "";
+				while ((line = rd.readLine()) != null) {
+					Log.e("HttpResponse", line);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 	
 	public void onProviderDisabled(String arg0) {

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -207,39 +209,54 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     	myLocationOverlay.enableMyLocation();
     	// On some phones, runOnFirstFix() runs before there's a location fix. so getMyLocation() returns NULL.
     	// Catch this.
-    	if (myLocationOverlay.getMyLocation() != null) {
-    		myLocationOverlay.runOnFirstFix(new Runnable() {
-    			public void run() {
+    	myLocationOverlay.runOnFirstFix(new Runnable() {
+    		public void run() {
+    			if (myLocationOverlay.getMyLocation() != null) {
     				mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+    				mapView.getController().setZoom(10);
     				Log.i(TAG, myLocationOverlay.getMyLocation().toString());
     				int myLng = myLocationOverlay.getMyLocation().getLongitudeE6();
     				int myLat = myLocationOverlay.getMyLocation().getLatitudeE6();
-    				HttpClient client = new DefaultHttpClient();
-    				HttpPost post = new HttpPost(CGI_BASE + "/updatelocation.py");
     				// Get the current registrationId. This might be "nokey"!
     				registrationId = showRegistrationId();
     				if (registrationId != null) {        		
-    					try {
-    						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-    						nameValuePairs.add(new BasicNameValuePair("lng", String.valueOf(myLng)));
-    						nameValuePairs.add(new BasicNameValuePair("lat", String.valueOf(myLat)));
-    						nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
-    						nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
-    						post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-    						HttpResponse response = client.execute(post);
-    						BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-    						String line = "";
-    						while ((line = rd.readLine()) != null) {
-    							Log.e("HttpResponse", line);
-    						}
-    					} catch (IOException e) {
-    						e.printStackTrace();
-    					}
+    					AsyncSubmitInitialLocation do_submit_initial_location = new AsyncSubmitInitialLocation();
+    					do_submit_initial_location.execute(String.valueOf(myLng), String.valueOf(myLat), registrationId, deviceId);
     				}
     			}
-        	});
-    	}
+    		}
+    	});
     }
+	class AsyncSubmitInitialLocation extends AsyncTask<String, Void, Void> {
+		String screenmsg = null;
+		URI url;
+		protected Void doInBackground(String... param) {
+			try {
+				url = new URI(CGI_BASE + "/updatelocation.py");
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			try {
+				HttpClient client = new DefaultHttpClient();
+				HttpPost post = new HttpPost(url);
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+				nameValuePairs.add(new BasicNameValuePair("lng", param[0]));
+				nameValuePairs.add(new BasicNameValuePair("lat", param[1]));
+				nameValuePairs.add(new BasicNameValuePair("registrationId", param[2]));
+				nameValuePairs.add(new BasicNameValuePair("deviceId", param[3]));
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				HttpResponse response = client.execute(post);
+				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				String line = "";
+				while ((line = rd.readLine()) != null) {
+					Log.e("HttpResponse", line);
+				}
+			} catch (IOException e) {
+				screenmsg = "Unable to submit marker - try again!";
+			}
+			return null;
+		}
+	}
 
 	protected void onPause() {
     	super.onPause();
@@ -349,31 +366,56 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         	itemizedOverlayLow.addOverlay(new OverlayItem(point, "", ""));
         	mapOverlays.add(itemizedOverlayLow);
         	mapView.postInvalidate();
-            try {
-    			submitCoordinates(point.getLongitudeE6(), point.getLatitudeE6());
-    		} catch (MalformedURLException e) {
-    			Toast.makeText(this, "Malformed URL", Toast.LENGTH_SHORT).show();
-    		}
+        	AsyncSubmitCoords submit_coords = new AsyncSubmitCoords();
+   			submit_coords.execute(point.getLongitudeE6(), point.getLatitudeE6());
         } else {
         	Toast.makeText(this, "Waiting for GPS location...", Toast.LENGTH_SHORT).show();
         }
 	}
-	
-	public void submitCoordinates(int lng, int lat) throws MalformedURLException {
-		String queryString = "?lng=" + lng + "&lat=" + lat + "&registrationId=" + showRegistrationId();
-		URL url = new URL(CGI_BASE + "/user_submit.py" + queryString);
-		try {
-			URLConnection urlConnection = url.openConnection();
-			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			InputStreamReader is = new InputStreamReader(in);
-			BufferedReader br = new BufferedReader(is);
-			String read = br.readLine();
-			Log.d(TAG, read);
-			Toast.makeText(this, read, Toast.LENGTH_SHORT).show();
-		} catch (IOException e) {
-			Toast.makeText(this, "Unable to submit URL - try again!", Toast.LENGTH_SHORT).show();
+	class AsyncSubmitCoords extends AsyncTask<Integer, Void, Void> {
+		String screenmsg = null;
+		URL url;
+		protected Void doInBackground(Integer... param) {
+			try {
+				String queryString = "?lng=" + param[0] + "&lat=" + param[1] + "&registrationId=" + showRegistrationId();
+				url = new URL(CGI_BASE + "/user_submit.py" + queryString);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			try {
+				URLConnection urlConnection = url.openConnection();
+				InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+				InputStreamReader is = new InputStreamReader(in);
+				BufferedReader br = new BufferedReader(is);
+				String read = br.readLine();
+				Log.d(TAG, read);
+				screenmsg = read;
+			} catch (IOException e) {
+				screenmsg = "Unable to submit marker - try again!";
+			}
+			return null;
+		}
+		
+		protected void onPostExecute(String msg) {
+			Toast.makeText(TornadoWatchActivity.this, msg, Toast.LENGTH_SHORT).show();
 		}
 	}
+	
+//	public void submitCoordinates(int lng, int lat) throws MalformedURLException {
+//		String queryString = "?lng=" + lng + "&lat=" + lat + "&registrationId=" + showRegistrationId();
+//		URL url = new URL(CGI_BASE + "/user_submit.py" + queryString);
+//		try {
+//			URLConnection urlConnection = url.openConnection();
+//			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+//			InputStreamReader is = new InputStreamReader(in);
+//			BufferedReader br = new BufferedReader(is);
+//			String read = br.readLine();
+//			Log.d(TAG, read);
+//			Toast.makeText(this, read, Toast.LENGTH_SHORT).show();
+//		} catch (IOException e) {
+//			Toast.makeText(this, "Unable to submit URL - try again!", Toast.LENGTH_SHORT).show();
+//		}
+//	}
 	
 	public static String downloadJSON() throws MalformedURLException, IOException {
         Log.i(TAG, "Downloading markers");
@@ -401,6 +443,5 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		String registrationId = prefs.getString(AUTH, "None");
 		Log.d("C2DM RegId requested", registrationId);
 		return registrationId;
-
 	}
 }
