@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+    <Style id="yellowLineGreenPoly">
+      <LineStyle>
+        <color>7f00ffff</color>
+        <width>4</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7f00ff00</color>
+      </PolyStyle>
+    </Style>
+<Folder>
+<styleUrl>#yellowLineGreenPoly</styleUrl>
+ <Placemark><Point><coordinates>-96.033418,36.370867</coordinates></Point><name>Osage County, OK</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-84.385469,39.347482</coordinates></Point><name>Butler County, OH</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-89.080238,30.455873</coordinates></Point><name>Harrison County, MS</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-94.58051,36.173007</coordinates></Point><name>Delaware County, OK</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-97.59308,35.45178</coordinates></Point><name>Oklahoma County, OK</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-117.059909,32.693188</coordinates></Point><name>San Diego County, CA</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-97.105815,33.183948</coordinates></Point><name>Denton County, TX</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-97.573113,35.416422</coordinates></Point><name>Oklahoma County, OK</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-97.389193,37.637484</coordinates></Point><name>Sedgwick County, KS</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-93.236635,34.514601</coordinates></Point><name>Garland County, AR</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-85.682616,42.877287</coordinates></Point><name>Kent County, MI</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-93.574047,41.365719</coordinates></Point><name>Warren County, IA</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-94.644279,38.842442</coordinates></Point><name>Johnson County, KS</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-93.5375,41.588888</coordinates></Point><name>Polk County, IA</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-85.10582,35.048803</coordinates></Point><name>Hamilton County, TN</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-112.030116,40.644882</coordinates></Point><name>Salt Lake County, UT</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-97.060445,32.828807</coordinates></Point><name>Tarrant County, TX</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-96.930748,35.323563</coordinates></Point><name>Pottawatomie County, OK</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-87.274372,41.535496</coordinates></Point><name>Lake County, IN</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-98.718069,37.640963</coordinates></Point><name>Pratt County, KS</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-80.649081,41.0946</coordinates></Point><name>Mahoning County, OH</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-18</description></Placemark>
+ <Placemark><Point><coordinates>-85.448083,32.597853</coordinates></Point><name>Lee County, AL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-90.085386,32.27973</coordinates></Point><name>Rankin County, MS</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-111.45589,40.49382</coordinates></Point><name>Wasatch County, UT</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-93.633825,41.58962</coordinates></Point><name>Polk County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-96.749118,32.944638</coordinates></Point><name>Dallas County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-94.716787,44.528279</coordinates></Point><name>Renville County, MN</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-87.768408,32.3598</coordinates></Point><name>Marengo County, AL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-93.182642,41.906656</coordinates></Point><name>Marshall County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-94.482138,38.799804</coordinates></Point><name>Cass County, MO</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-84.588586,35.454039</coordinates></Point><name>McMinn County, TN</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-104.866687,41.141635</coordinates></Point><name>Laramie County, WY</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-97.591954,35.507166</coordinates></Point><name>Oklahoma County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-85.844087,38.195018</coordinates></Point><name>Jefferson County, KY</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-83.900472,32.59596</coordinates></Point><name>Peach County, GA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-82.217384,35.007064</coordinates></Point><name>Spartanburg County, SC</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-82.3781,29.622804</coordinates></Point><name>Alachua County, FL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-94.095338,42.074366</coordinates></Point><name>Boone County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-79.453264,36.600131</coordinates></Point><name>Danville City, VA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-71.228358,42.380704</coordinates></Point><name>Middlesex County, MA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-93.585728,41.606294</coordinates></Point><name>Polk County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-97.49755,35.720957</coordinates></Point><name>Oklahoma County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-98.722077,29.236319</coordinates></Point><name>Bexar County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-96.834278,32.697722</coordinates></Point><name>Dallas County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-82.044654,29.142744</coordinates></Point><name>Marion County, FL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-83.658153,39.524637</coordinates></Point><name>Clinton County, OH</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-93.692085,41.642697</coordinates></Point><name>Polk County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-80.633653,35.402021</coordinates></Point><name>Cabarrus County, NC</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-97.621652,35.542789</coordinates></Point><name>Oklahoma County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-98.578733,35.548441</coordinates></Point><name>Caddo County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-88.08353,45.310163</coordinates></Point><name>Marinette County, WI</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.681575,39.002388</coordinates></Point><name>Shawnee County, KS</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-81.301944,35.708773</coordinates></Point><name>Catawba County, NC</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-96.584541,32.923088</coordinates></Point><name>Dallas County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-101.47872,36.695889</coordinates></Point><name>Texas County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-97.451476,35.187467</coordinates></Point><name>Cleveland County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-88.003783,41.944454</coordinates></Point><name>DuPage County, IL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-84.281885,39.105852</coordinates></Point><name>Clermont County, OH</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-86.696064,36.039498</coordinates></Point><name>Davidson County, TN</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-116.274701,43.561291</coordinates></Point><name>Ada County, ID</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-99.625611,36.847185</coordinates></Point><name>Harper County, OK</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-99.943,37.781986</coordinates></Point><name>Ford County, KS</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-86.170172,33.574609</coordinates></Point><name>Talladega County, AL</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-84.188188,34.262301</coordinates></Point><name>Forsyth County, GA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-95.162035,29.81748</coordinates></Point><name>Harris County, TX</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-89.12883,32.608354</coordinates></Point><name>Neshoba County, MS</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-121.899674,37.257835</coordinates></Point><name>Santa Clara County, CA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-93.929652,42.271844</coordinates></Point><name>Hamilton County, IA</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-85.547267,43.230459</coordinates></Point><name>Kent County, MI</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-82.731104,40.290804</coordinates></Point><name>Knox County, OH</name><description>2012-04-17</description></Placemark>
+ <Placemark><Point><coordinates>-90.287892,38.808991</coordinates></Point><name>Saint Louis County, MO</name><description>2012-04-17</description></Placemark>
+
+
+</Folder>
+</Document>
+</kml>

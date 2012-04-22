@@ -97,7 +97,7 @@ def main():
     # they did, ignore the submittion - high probability it was just a test.
     recent_user = check_recent_user(registration_id)
     if recent_user:
-        cgi_output("Marker submitted")
+        cgi_output("Marker submitted, awaiting confirmation.")
         return
 
     # Make sure we're in a tornado alert zone
@@ -105,11 +105,11 @@ def main():
     if in_zone:
         priority = 't'
         weight = 2
-        msg = 'Marker submitted'
+        msg = 'Marker submitted, awaiting confirmation.'
     else:
         priority = 'f'
         weight = 1
-        msg = 'Marker submitted'
+        msg = 'Marker submitted, awaiting confirmation.'
 
     cur = DB_CONN.cursor()
     # First make sure the user hasn't submitted an alert already in the last 30

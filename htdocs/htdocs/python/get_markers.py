@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import cgi
+from mod_python import apache
 import json
 import memcache
 import psycopg2
@@ -17,31 +17,29 @@ def make_db_conn():
     DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
 
 
-def cgi_output(msg):
+def cgi_output(req, msg):
     """ One place to generate CGI output"""
 
-    print "Content-type: text/plain"
-    print
-    print cgi.escape(msg)
+    req.content_type = "text/plain"
+    req.send_http_header()
+    req.write(msg)
 
 
-def main():
+def index(req):
     make_db_conn()
     dict_cur = DB_CONN.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     mc = memcache.Client(['127.0.0.1:11211'], debug=0)
-
+    
     # Try to get the data from memcache, if it fails, continue as normal.
     marker_list = mc.get("marker_list")
     if marker_list:
-        cgi_output(marker_list)
-        return
+        cgi_output(req, marker_list)
+        return apache.OK
     marker_list = []
 
-    all_markers_sql = """SELECT s.id, s.location, X(s.location) AS lng, Y(s.location) AS lat, s.priority
-                            FROM user_submits s, user_registration r
-                            WHERE s.create_date > (%s - (60 * 60 * 24))
-                            AND s.registration_id = r.registration_id
-                            AND r.karma > 0"""
+    all_markers_sql = """SELECT id, location, X(location) AS lng, Y(location) AS lat, priority
+                            FROM user_submits
+                            WHERE create_date > (%s - (60 * 60 * 24))"""
     dict_cur.execute(all_markers_sql, (TIME,))
 
     # For each marker submitted, do a distance check. If there is ONE other
@@ -52,12 +50,12 @@ def main():
                         WHERE create_date > (%s - (60 * 60 * 24))
                         AND ST_DWithin(%s, location, 32186, false)"""
         check_cur = DB_CONN.cursor()
-        check_cur.execute(check_sql, (TIME, row['s.location']))
+        check_cur.execute(check_sql, (TIME, row['location']))
         check_row = check_cur.fetchone()
         if check_row[0] >= 4:
             marker_list.append({'lat': row['lat'],
                                 'lng': row['lng'],
-                                'priority': row['s.priority']})
+                                'priority': row['priority']})
         check_cur.close()
     # Get the user's tornado markers, so they don't think they've disappeared
     # TODO(avleen): Enable this after we enable sending the registration_id on
@@ -82,8 +80,5 @@ def main():
     jsonout = json.dumps(marker_list)
     mc.set("marker_list", jsonout, time=30)
 
-    cgi_output(jsonout)
-
-
-if __name__ == "__main__":
-    main()
+    cgi_output(req, jsonout)
+    return apache.OK
