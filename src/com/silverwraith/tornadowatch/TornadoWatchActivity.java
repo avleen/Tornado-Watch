@@ -20,17 +20,25 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -51,7 +59,12 @@ import android.view.MotionEvent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 
 public class TornadoWatchActivity extends MapActivity implements OnGestureListener, OnDoubleTapListener {
 	
@@ -68,6 +81,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     static String TAG = "TW";
     String registrationId = null; 
     static String CGI_BASE = "http://tw.silverwraith.com/cgi-bin";
+    private AdView adView;
     
 	/** Called when the activity is first created. */
     @Override
@@ -87,7 +101,17 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 			e.printStackTrace();
 		}
     	
-    	// Do our registration dance first
+    	// Before anything else, make sure we have a network connection
+    	final ConnectivityManager conMgr =  (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    	final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+    	if (activeNetwork != null && activeNetwork.isConnected()) {
+    	    //notify user you are online
+    	} else {
+    		Toast.makeText(TornadoWatchActivity.this, "No internet connection found!", Toast.LENGTH_SHORT).show();
+    		this.finish();
+    	}
+    	
+    	// Do our registration dance
     	class RegisterApp extends AsyncTask<Void, Void, Void> {
     		protected Void doInBackground(Void... arg0) {
     			Log.w("C2DM", "start registration process");
@@ -100,7 +124,14 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
     			Log.d("Tornado Debug", registrationId);
 				return null;
     		}
+    		
+			@SuppressWarnings("unused")
+			protected void onPostExecute(Void... arg0) {
+				super.onPostExecute(null);
+    			Toast.makeText(TornadoWatchActivity.this, "Successfully registered with Tornado Alert", Toast.LENGTH_SHORT).show();
+    		}
     	}
+    	Toast.makeText(TornadoWatchActivity.this, "Registering with Tornado Alert service...", Toast.LENGTH_SHORT).show();
     	RegisterApp do_registration = new RegisterApp();
     	do_registration.execute();
     	
@@ -118,6 +149,24 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         GetAndDrawMarkers do_get_draw_markers = new GetAndDrawMarkers();
         do_get_draw_markers.execute("onCreate");
         do_get_draw_markers = null;
+        
+    	// Ads!
+    	// Look up the AdView as a resource and load a request.
+    	adView = new AdView(this, AdSize.BANNER, "a15126d73db75bf");
+        // Lookup your LinearLayout assuming it's been given
+        // the attribute android:id="@+id/mainLayout"
+        LinearLayout layout = (LinearLayout)findViewById(R.id.zoom);
+        layout.addView(adView);
+        // Initiate a generic request to load it with an ad
+        adView.loadAd(new AdRequest());
+    }
+    
+    @Override
+    public void onDestroy() {
+      if (adView != null) {
+        adView.destroy();
+      }
+      super.onDestroy();
     }
     
     public boolean isDebugBuild() throws Exception {
@@ -157,7 +206,7 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
 		            		mapOverlays.add(itemizedOverlayHigh);
 		            	} else {
-		            		itemizedOverlayHigh.addOverlay(new OverlayItem(point, "", ""));
+		            		itemizedOverlayLow.addOverlay(new OverlayItem(point, "", ""));
 		            		mapOverlays.add(itemizedOverlayLow);
 		            	}
 					}
@@ -237,7 +286,13 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 				e.printStackTrace();
 			}
 			try {
-				HttpClient client = new DefaultHttpClient();
+				// Set some timeouts for the HTTP connection
+				HttpParams httpParameters = new BasicHttpParams();
+				int timeoutConnection = 3000;
+				HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+				int timeoutSocket = 5000;
+				HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+				HttpClient client = new DefaultHttpClient(httpParameters);				
 				HttpPost post = new HttpPost(url);
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 				nameValuePairs.add(new BasicNameValuePair("lng", param[0]));
@@ -251,6 +306,9 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 				while ((line = rd.readLine()) != null) {
 					Log.e("HttpResponse", line);
 				}
+				httpParameters = null;
+				post = null;
+				client = null;
 			} catch (IOException e) {
 				screenmsg = "Unable to submit marker - try again!";
 			}
@@ -357,7 +415,24 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 		}
 	}
 	
-	private void placeMarker() {		
+	private void placeMarker() {
+		// First make sure the user really wants to report a tornado
+		new AlertDialog.Builder(this)
+        	.setIcon(android.R.drawable.ic_dialog_alert)
+        	.setTitle("Really??")
+        	.setMessage("Are you sure you want to report a tornado?")
+        	.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+        	public void onClick(DialogInterface dialog, int which) {
+        		reallyPlaceMarker();
+        	}
+
+        })
+        	.setNegativeButton("No", null)
+        	.show();
+	}
+	
+	private void reallyPlaceMarker() {
 		mapOverlays = mapView.getOverlays();
 		drawableLow = this.getResources().getDrawable(R.drawable.locationplace);
 		itemizedOverlayLow = new TornadoItemizedOverlay(drawableLow);
@@ -368,10 +443,22 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
         	mapView.postInvalidate();
         	AsyncSubmitCoords submit_coords = new AsyncSubmitCoords();
    			submit_coords.execute(point.getLongitudeE6(), point.getLatitudeE6());
+   			
+   			// Show a popup, letting the user know the marker has been submitted.
+   			new AlertDialog.Builder(this)
+   				.setIcon(android.R.drawable.ic_dialog_alert)
+   				.setTitle("Tornado submitted")
+        		.setMessage("Thank you. Your tornado will be sent out a soon as we confirm it!")
+        		.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        	{
+        		public void onClick(DialogInterface dialog, int which) {
+       			}
+        	}).show();
         } else {
         	Toast.makeText(this, "Waiting for GPS location...", Toast.LENGTH_SHORT).show();
         }
 	}
+	
 	class AsyncSubmitCoords extends AsyncTask<Integer, Void, Void> {
 		String screenmsg = null;
 		URL url;
@@ -388,7 +475,9 @@ public class TornadoWatchActivity extends MapActivity implements OnGestureListen
 				InputStreamReader is = new InputStreamReader(in);
 				BufferedReader br = new BufferedReader(is);
 				String read = br.readLine();
-				Log.d(TAG, read);
+				if (read != null) {
+					Log.d(TAG, read);
+				}
 				screenmsg = read;
 			} catch (IOException e) {
 				screenmsg = "Unable to submit marker - try again!";

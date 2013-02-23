@@ -15,6 +15,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.app.Service;
 import android.content.Intent;
@@ -92,7 +95,11 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 				e.printStackTrace();
 			}
 			try {
-				HttpClient client = new DefaultHttpClient();
+				// set the connection timeout value to 10 seconds (10000 milliseconds)
+			    final HttpParams httpParams = new BasicHttpParams();
+			    HttpConnectionParams.setConnectionTimeout(httpParams, 10000);
+			    
+				HttpClient client = new DefaultHttpClient(httpParams);
 				HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
 
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);

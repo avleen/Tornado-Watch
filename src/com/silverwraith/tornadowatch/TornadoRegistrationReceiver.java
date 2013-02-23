@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -93,7 +94,7 @@ public class TornadoRegistrationReceiver extends BroadcastReceiver {
 			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
 			int timeoutSocket = 5000;
 			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
-			DefaultHttpClient client = new DefaultHttpClient(httpParameters);
+			HttpClient client = new DefaultHttpClient(httpParameters);
 			HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/register.py");
 
 			while (true) {
@@ -124,6 +125,9 @@ public class TornadoRegistrationReceiver extends BroadcastReceiver {
 				}
 				break;
 			}
+			httpParameters = null;
+			post = null;
+			client = null;
 			return null;
 		}
 	}
