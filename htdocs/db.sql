@@ -13701,6 +13701,47 @@ CREATE TABLE geometry_columns (
 
 ALTER TABLE public.geometry_columns OWNER TO postgres;
 
+SET default_with_oids = false;
+
+--
+-- Name: nws_submits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE nws_submits (
+    id integer NOT NULL,
+    create_date integer DEFAULT date_part('epoch'::text, now()) NOT NULL,
+    "time" integer,
+    address character varying(1024),
+    county character varying(128),
+    state character(2),
+    location geometry,
+    remarks character varying(1024)
+);
+
+
+ALTER TABLE public.nws_submits OWNER TO postgres;
+
+--
+-- Name: nws_submits_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE nws_submits_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.nws_submits_id_seq OWNER TO postgres;
+
+--
+-- Name: nws_submits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE nws_submits_id_seq OWNED BY nws_submits.id;
+
+
 --
 -- Name: ps; Type: VIEW; Schema: public; Owner: postgres
 --
@@ -13710,8 +13751,6 @@ CREATE VIEW ps AS
 
 
 ALTER TABLE public.ps OWNER TO postgres;
-
-SET default_with_oids = false;
 
 --
 -- Name: spatial_ref_sys; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -13894,6 +13933,13 @@ ALTER TABLE counties ALTER COLUMN gid SET DEFAULT nextval('counties_gid_seq'::re
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
+ALTER TABLE nws_submits ALTER COLUMN id SET DEFAULT nextval('nws_submits_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
 ALTER TABLE tornado_warnings ALTER COLUMN id SET DEFAULT nextval('tornado_warnings_id_seq'::regclass);
 
 
@@ -13975,6 +14021,20 @@ CREATE INDEX counties_the_geom_gist ON counties USING gist (the_geom);
 --
 
 CREATE UNIQUE INDEX endtime_count_state_idx ON tornado_warnings USING btree (endtime, county, state);
+
+
+--
+-- Name: nws_submits_create_date_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX nws_submits_create_date_idx ON nws_submits USING btree (create_date);
+
+
+--
+-- Name: nws_submits_lcoation_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX nws_submits_lcoation_idx ON nws_submits USING gist (location);
 
 
 --

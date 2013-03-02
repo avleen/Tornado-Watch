@@ -10,7 +10,8 @@ def make_db_conn():
     """Establish a database connection"""
 
     global DB_CONN
-    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres host=localhost port=6432")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 
 def main():
@@ -36,7 +37,6 @@ def main():
                 SET location = makepoint(%s, %s)
                 WHERE registration_id = %s"""
     cur.execute(sql, (lng, lat, registration_id))
-    DB_CONN.commit()
 
     print "Content-type: text/plain"
     print

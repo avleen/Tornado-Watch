@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SQL="select count(*), date_trunc('day', to_timestamp(create_date)) as create_dated from user_registration group by create_dated order by create_dated;"
-result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch | awk '{ print $1, $3 }' | grep 2012 )
+result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch -h localhost -p 6432 | awk '{ print $1, $3 }' | grep 2012 )
 start=$( echo "${result}" | head -n1 | awk '{print $2}' )
 end=$( echo "${result}" | tail -n1 | awk '{print $2}' )
 echo "${result}" > /tmp/reg.dat
@@ -24,7 +24,7 @@ EOF
 cat /tmp/reg.plt | gnuplot
 
 SQL="select count(*), date_trunc('hour', to_timestamp(create_date)) as create_dated from user_registration where create_date > (date_part('epoch', now()) - (60*60*24*7)) group by create_dated order by create_dated;"
-result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch | awk '{ print $1, $3 "_" $4 }' | grep 2012 )
+result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch -h localhost -p 6432 | awk '{ print $1, $3 "_" $4 }' | grep 2012 )
 start=$( echo "${result}" | head -n1 | awk '{print $2}' )
 end=$( echo "${result}" | tail -n1 | awk '{print $2}' )
 echo "${result}" > /tmp/reg2.dat
@@ -47,7 +47,7 @@ EOF
 cat /tmp/reg.plt | gnuplot
 
 SQL="select count(*), date_trunc('hour', to_timestamp(create_date)) as create_dated from user_registration group by create_dated order by create_dated;"
-result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch | awk '{ print $1, $3 "_" $4 }' | grep 2012 )
+result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch -h localhost -p 6432 | awk '{ print $1, $3 "_" $4 }' | grep 2012 )
 start=$( echo "${result}" | head -n1 | awk '{print $2}' )
 end=$( echo "${result}" | tail -n1 | awk '{print $2}' )
 echo "${result}" > /tmp/reg2.dat
@@ -70,7 +70,7 @@ EOF
 cat /tmp/reg.plt | gnuplot
 
 SQL="select count(*), date_part('hour', to_timestamp(create_date)) as create_dated from user_registration group by create_dated order by create_dated;"
-result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch | awk '{ print $1, $3 }' | grep "[0-9]" )
+result=$( echo ${SQL} | psql -qtU postgres -d tornadowatch -h localhost -p 6432 | awk '{ print $1, $3 }' | grep "[0-9]" )
 echo "${result}" > /tmp/reg.dat
 cat > /tmp/reg.plt<<EOF
 set terminal png size 600,400

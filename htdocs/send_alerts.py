@@ -150,7 +150,9 @@ def print_debug(msg):
 
     if DEBUG:
         logfile = '/usr/local/www/silverwraith.com/canonical/tw.silverwraith.com/logs/send_alerts.log'
-        open(logfile, 'a').write("%s %s\n" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg))
+        log_msg = "%s %s\n" % (time.strftime("%Y%m%d-%H%M%S", time.gmtime()), msg)
+        print log_msg
+        open(logfile, 'a').write(log_msg)
     return
 
 

@@ -11,7 +11,8 @@ def make_db_conn():
     """Establish a database connection"""
 
     global DB_CONN
-    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres host=localhost port=6432")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 
 def check_submit_in_zone(lng, lat):
@@ -125,7 +126,6 @@ def main():
     sql = """INSERT INTO user_submits (registration_id, location, priority, weight)
                 VALUES (%s, makepoint(%s, %s), %s, %s)"""
     cur.execute(sql, (registration_id, lng, lat, priority, weight))
-    DB_CONN.commit()
 
     cgi_output(msg)
     open(STAT_FILE, 'w')

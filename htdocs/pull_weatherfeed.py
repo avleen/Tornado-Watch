@@ -38,15 +38,13 @@ def get_tornado_warnings(feed):
                   'TX', 'UT', 'VT', 'VA', 'VI', 'WA', 'WV', 'WI', 'WY']
 
     print_debug('Parsing entries')
-    for entry in feed.entries:
-        if not entry['event']:
-            continue
 
-        if not re.search('tornado', entry['event'], re.IGNORECASE):
-            print_debug('..not a tornado warning or watch')
-            continue
-
-        affected_counties = entry['areadesc'].split('; ')
+    # Trim down the list of alerts to actual tornado warnings
+    tornado_alerts = [ x for x in feed.entries if
+                      re.search('tornado', x['cap_event'], re.IGNORECASE) and
+                      x['cap_status'] == 'Actual' ]
+    for entry in tornado_alerts:
+        affected_counties = entry['cap_areadesc'].split('; ')
         if not affected_counties:
             print_debug('Counties list empty:\n' + entry)
             debug_mail('Counties empty', entry)
@@ -56,15 +54,15 @@ def get_tornado_warnings(feed):
             print_debug('State not found:\n' + entry)
             debug_mail('State not found', entry)
             continue
-        if 'TornadoWatch' in entry['id']:
+        if entry.cap_event == 'Tornado Watch':
             alert_type='watch'
-        elif 'TornadoWarning' in entry['id']:
+        elif entry.cap_event == 'Tornado Warning':
             alert_type='warning'
         else:
             alert_type='Unknown'
 
-        starttime = time.mktime(feedparser._parse_date(entry['effective'])) - time.timezone
-        endtime = time.mktime(feedparser._parse_date(entry['expires'])) - time.timezone
+        starttime = time.mktime(feedparser._parse_date(entry['cap_effective'])) - time.timezone
+        endtime = time.mktime(feedparser._parse_date(entry['cap_expires'])) - time.timezone
         for affected_county in affected_counties:
             yield affected_county, affected_state, starttime, endtime, alert_type
 

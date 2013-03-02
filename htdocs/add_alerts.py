@@ -67,17 +67,27 @@ def main():
     make_db_conn()
     stat_files = {"/tmp/pull_weatherfeed.tmp": 0,
                   "/tmp/user_submits.tmp": 0}
+    do_run = False
 
     # The rest of this is basically a big loop with a sleep
     while True:
         while True:
             for filename, age in stat_files.items():
+                if not os.path.exists(filename):
+                    time.sleep(10)
+                    continue
                 file_age = os.stat(filename).st_mtime
                 if file_age > age:
                     print_debug("Update happened to %s" % filename)
                     stat_files[filename] = file_age
+                    do_run = True
                     break
-            time.sleep(10)
+            if do_run:
+                do_run = False
+                break
+            else:
+                print_debug("nothing to add")
+                time.sleep(10)
         time_now = time.mktime(time.localtime())
         main_cur = DB_CONN.cursor()
         # Get a list of users in current tornado alert zones
@@ -89,7 +99,8 @@ def main():
                      AND c.county = t.county
                      AND t.starttime < %s
                      AND t.endtime > %s
-                     AND r.active = 't'"""
+                     AND r.active = 't'
+                     AND r.registration_id != 'nokey'"""
             print_debug('Getting the list of users in tornado zones')
             main_cur.execute(sql, (time_now, time_now))
             print_debug('%s users found in tornado zones' % main_cur.rowcount)
@@ -125,7 +136,8 @@ def main():
                             WHERE s.create_date > %s
                             AND r.registration_id = %s
                             AND s.registration_id != %s
-                            AND r.active='t'"""
+                            AND r.active='t'
+                            AND r.registration_id != 'nokey'"""
             #print_debug(check_sql % (time_now - 3600, registration_id, registration_id))
             check_cur.execute(check_sql, (time_now - 3600, registration_id, registration_id))
             # If we didn't find a match against user_submit, continue

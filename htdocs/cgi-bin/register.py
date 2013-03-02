@@ -10,7 +10,8 @@ def make_db_conn():
     """Establish a database connection"""
 
     global DB_CONN
-    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres")
+    DB_CONN = psycopg2.connect("dbname=tornadowatch user=postgres host=localhost port=6432")
+    DB_CONN.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 
 def cgi_output(msg):
@@ -43,7 +44,6 @@ def main():
         add_sql = """INSERT INTO user_registration (device_id, registration_id)
                         VALUES (%s, %s)"""
         cur.execute(add_sql, (device_id, registration_id))
-        DB_CONN.commit()
 
     cgi_output("Registration successful")
 
