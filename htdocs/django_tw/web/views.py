@@ -102,15 +102,22 @@ def register(request):
     device_id = re.sub('[^A-Za-z0-9_\-]+', '', device_id)
     registration_id = re.sub('[^A-Za-z0-9_\-]+', '', registration_id)
 
+    # Sometimes the user is already registered. Normally we might skip this step
+    # if it happens, but in some cases the device will send its locationupdate
+    # first, and device_id second. Because of this we still need to fill in the
+    # device_id.
     cur = DB_CONN.cursor()
     check_sql = """SELECT * FROM user_registration
-                    WHERE device_id = %s
-                    AND registration_id = %s"""
-    cur.execute(check_sql, (device_id, registration_id))
+                    WHERE registration_id = %s"""
+    cur.execute(check_sql, (registration_id, ))
     if cur.rowcount == 0:
-        add_sql = """INSERT INTO user_registration (device_id, registration_id)
+        sql = """INSERT INTO user_registration (device_id, registration_id)
                         VALUES (%s, %s)"""
-        cur.execute(add_sql, (device_id, registration_id))
+    else:
+        sql = """UPDATE user_registration
+                    SET device_id = %s
+                    WHERE registration_id = %s"""
+    cur.execute(sql, (device_id, registration_id))
 
     return HttpResponse("Registration successful", mimetype="text/plain")
 
@@ -132,9 +139,22 @@ def updatelocation(request):
     lng = float(lng) / 1000000
     lat = float(lat) / 1000000
 
-    sql = """UPDATE user_registration
-                SET location = makepoint(%s, %s)
-                WHERE registration_id = %s"""
+    # Sometimes the app sends the location update before the registration, as
+    # both happen asynchronously. If we get a location and registration_id
+    # first, insert it. We'll add the device_id when we get that in the
+    # register() method.
+    check_sql = """SELECT registration_id FROM user_registration
+                    WHERE registration_id = %s"""
+    check_cur = DB_CONN.cursor()
+    check_cur.execute(check_sql, (registration_id, ))
+    if check_cur.rowcount == 0:
+        sql = """INSERT INTO user_registration (location, registration_id)
+                    VALUES (makepoint(%s, %s), %s)"""
+    else:
+        sql = """UPDATE user_registration
+                    SET location = makepoint(%s, %s),
+                    update_date = date_part('epoch'::text, now())
+                    WHERE registration_id = %s"""
     cur = DB_CONN.cursor()
     cur.execute(sql, (lng, lat, registration_id))
 
