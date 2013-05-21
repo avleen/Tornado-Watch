@@ -84,7 +84,7 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
     Drawable drawableHigh;
     public LocationManager locationManager;
     public static Location location = null;
-    public Integer appVer = 9;
+    public Integer appVer = 10;
 
     /** Called when the activity is first created. */
     @Override
@@ -176,7 +176,7 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
         }
         
         // If we have a location for the user now, hop to it
-        if (location != null) {
+        if (location != null && map != null) {
         	zoomToMyLocation();
         }
         
@@ -324,7 +324,7 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
         }
 		
 		protected void onPostExecute(JSONArray json) {
-            if (json != null && json.length() > 0) {
+            if (json != null && json.length() > 0 && map != null) {
                 // Clear the map before adding new markers.
                 map.clear();
                 for (int i=0; i < json.length(); i++) {
@@ -355,10 +355,14 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
 
     protected void onResume() {
     	super.onResume();
-        // On start or resume, register for location updates!
-        // Get them frequently to start with, the onLocationChange code will
-        // slow this down.
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        // On start or resume, register for location updates!        
+        // GPS should be on now. Register for regular updates, get them as often as possible, or when the device moves 5 meters.
+        if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
+        	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, this);
+        }
+        if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)) {
+        	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, this);
+        }
     }
 
 	class AsyncSubmitInitialLocation extends AsyncTask<String, Void, Void> {
@@ -375,6 +379,9 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
 				String deviceId = Secure.getString(TornadoWatchActivity.this.getContentResolver(), Secure.ANDROID_ID);
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
     			String registrationId = prefs.getString(AUTH, "nokey");
+    			if (TornadoWatchActivity.location == null) {
+    				return null;
+    			}
     			String latitude = String.valueOf(TornadoWatchActivity.location.getLatitude());
     			String longitude = String.valueOf(TornadoWatchActivity.location.getLongitude());
 				HttpParams httpParameters = new BasicHttpParams();
