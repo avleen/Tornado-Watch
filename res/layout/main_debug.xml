@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent">
- 
-    <com.silverwraith.tornadowatch.TornadoMapView 
-        android:id="@+id/mapView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:enabled="true"
-        android:clickable="true"
-        android:apiKey="01e6tYGHwwlFhgDdVJUleS6N-N3mXptbjJpx8ig"
-        />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
 
-    <LinearLayout android:id="@+id/zoom" 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_alignParentBottom="true" 
-        android:layout_centerHorizontal="true" 
-        />
- 
+    <fragment
+            android:id="@+id/map"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+    <LinearLayout android:id="@+id/zoom"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  android:layout_centerHorizontal="true"
+                  android:orientation="horizontal"
+            />
+
 </RelativeLayout>

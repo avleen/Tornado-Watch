@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, TornadoWatchActivity!</string>
-    <string name="app_name">Tornado Alert</string>
-    <string name="location_service_started">Tornado location service started</string>
-    <string name="location_service_label">Tornado Alerter location service</string>
+    <string translatable="false" name="hello">Hello World, TornadoWatchActivity!</string>
+    <string translatable="false" name="app_name">Tornado Alert</string>
+    <string translatable="false" name="location_service_started">Tornado location service started</string>
+    <string translatable="false" name="location_service_label">Tornado Alerter location service</string>
 
 </resources>
