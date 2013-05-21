@@ -3,8 +3,6 @@ package com.silverwraith.tornadowatch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +52,8 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 		Log.i(TAG, "Location manager service created");
 	}
 
-    public void onStart(Intent intent, int startId) {
+    @SuppressWarnings("deprecation")
+	public void onStart(Intent intent, int startId) {
     	super.onStart(intent, startId);
     	Log.i(TAG, "Location logger service started");
     }
@@ -78,22 +77,16 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 	   Log.d(TAG, "onLocationChanged with Location: " + loc.toString());
 	   // Get the current registrationId. This might be "nokey"!
 	   registrationId = showRegistrationId();
-	   double myLng = loc.getLongitude();
-	   double myLat = loc.getLatitude();
+	   String myLng = String.valueOf(loc.getLongitude());
+	   String myLat = String.valueOf(loc.getLatitude());
 	   if (registrationId != null) {        		
 		   AsyncSubmitLocationChange do_submit_location_change = new AsyncSubmitLocationChange();
-		   do_submit_location_change.execute(String.valueOf(myLng), String.valueOf(myLat), registrationId);
+		   do_submit_location_change.execute(myLng, myLat, registrationId);
 	   }
 	}
 	
 	class AsyncSubmitLocationChange extends AsyncTask<String, Void, Void> {
-		URL url;
 		protected Void doInBackground(String... param) {
-			try {
-				url = new URL("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
 			try {
 				// set the connection timeout value to 10 seconds (10000 milliseconds)
 			    final HttpParams httpParams = new BasicHttpParams();
@@ -103,9 +96,9 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 				HttpPost post = new HttpPost("http://tw.silverwraith.com/cgi-bin/updatelocation.py");
 
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-				nameValuePairs.add(new BasicNameValuePair("long", param[0]));
+				nameValuePairs.add(new BasicNameValuePair("lng", param[0]));
 				nameValuePairs.add(new BasicNameValuePair("lat", param[1]));
-				nameValuePairs.add(new BasicNameValuePair("registrationId", registrationId));
+				nameValuePairs.add(new BasicNameValuePair("registrationId", param[2]));
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				HttpResponse response = client.execute(post);
 				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -119,28 +112,23 @@ public class TornadoWatchLocationLoggerService extends Service implements Locati
 			return null;
 		}
 	}
-	
+
 	public void onProviderDisabled(String arg0) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onProviderEnabled(String arg0) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 		// TODO Auto-generated method stub
-		
 	}
-	
+
 	public String showRegistrationId() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String registrationId = prefs.getString(AUTH, null);
 		Log.d("C2DM RegId requested", registrationId);
 		return registrationId;
-
 	}
-
 }
