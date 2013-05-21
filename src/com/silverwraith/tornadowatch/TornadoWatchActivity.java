@@ -83,8 +83,8 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
     Drawable drawableLow;
     Drawable drawableHigh;
     public LocationManager locationManager;
-    public Location location = null;
-    public Integer appVer = 8;
+    public static Location location = null;
+    public Integer appVer = 9;
 
     /** Called when the activity is first created. */
     @Override
@@ -160,14 +160,20 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
         }
 
         // GPS should be on now. Register for regular updates, get them as often as possible, or when the device moves 5 meters.
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, this);
+        if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
+        	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, this);
+        }
+        if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)) {
+        	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, this);
+        }
 
         // Create the map view
         map = ((SupportMapFragment)(getSupportFragmentManager().findFragmentById(R.id.map))).getMap();
 
         // Draw a dot for the user's location
-        map.setMyLocationEnabled(true);
+        if (map != null) {
+        	map.setMyLocationEnabled(true);
+        }
         
         // If we have a location for the user now, hop to it
         if (location != null) {
@@ -369,8 +375,8 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
 				String deviceId = Secure.getString(TornadoWatchActivity.this.getContentResolver(), Secure.ANDROID_ID);
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
     			String registrationId = prefs.getString(AUTH, "nokey");
-    			String latitude = String.valueOf(location.getLatitude());
-    			String longitude = String.valueOf(location.getLongitude());
+    			String latitude = String.valueOf(TornadoWatchActivity.location.getLatitude());
+    			String longitude = String.valueOf(TornadoWatchActivity.location.getLongitude());
 				HttpParams httpParameters = new BasicHttpParams();
 				int timeoutConnection = 3000;
 				HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
@@ -475,7 +481,7 @@ public class TornadoWatchActivity extends FragmentActivity implements LocationLi
             submit_coords.execute(location.getLongitude(), location.getLatitude());
 
             // Show a popup, letting the user know the marker has been submitted.
-            new AlertDialog.Builder(context)
+            new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Tornado submitted")
                     .setMessage("Thank you. Your tornado will be sent out a soon as we confirm it!")
